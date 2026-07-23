@@ -180,8 +180,14 @@ These exist to prevent data-snooping and self-delusion. Follow them exactly.
        best 32.3% WR vs 40% breakeven, PF 0.07-0.56, layers subtract value.
        See hypothesis/ITERATION_LOG.md. Budget used 5/8.)
 - [ ] Validate once/twice on validation set  <-- NOT opened: nothing passed research
-- [ ] Adversarial review pass (separate from the building pass)
-- [ ] Open holdout once — final verdict
+- [x] Adversarial review pass (separate from the building pass)
+      (independent pass, 2026-07-23: verdict SOUND — mechanism carries zero
+       forward information at 30min-5h, |t|<=0.66. No look-ahead found. It
+       also WITHDREW 3 incorrect claims from the building pass — see
+       hypothesis/ITERATION_LOG.md)
+- [ ] Open holdout once — final verdict  <-- DELIBERATELY NOT OPENED.
+      v1.1 is disproven on the research set; there is no candidate to test.
+      The holdout stays sealed (0/1) for a future hypothesis version.
 
 Do not jump ahead of this list. If asked to "build the bot," start from the top
 unchecked item.
