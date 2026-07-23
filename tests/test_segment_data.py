@@ -151,18 +151,45 @@ def test_every_validation_open_is_logged_with_commit(monkeypatch, tmp_path):
     dt.datetime.fromisoformat(ts)  # parses
 
 
-def test_untracked_files_in_frozen_paths_lock_the_holdout(tmp_path, monkeypatch):
+def test_untracked_files_in_frozen_paths_are_detected():
     """Regression: git diff ignores untracked files, so without an explicit
-    check a whole new module could sit uncommitted in src/ while the gate
-    still reported unlocked. Verified that this was bypassable."""
-    import subprocess
-    _redirect_log(monkeypatch, tmp_path)
-    root = sd._PROJECT_ROOT
-    sneak = root / "src" / "_untracked_probe.py"
-    sneak.write_text("# uncommitted\n")
+    check a whole new module could sit uncommitted in src/ while the holdout
+    gate still reported unlocked. This was verified to be exploitable.
+
+    Tested via the helper directly so the assertion does not depend on whether
+    the tag-diff happens to be clean in the current repo state.
+    """
+    before = sd.untracked_in_frozen_paths()
+    sneak = sd._PROJECT_ROOT / "src" / "_untracked_probe.py"
+    sneak.write_text("# uncommitted code is still code\n")
     try:
-        ok, reason = sd._holdout_unlocked()
-        assert not ok, "untracked file in src/ must lock the holdout"
-        assert "untracked" in reason
+        during = sd.untracked_in_frozen_paths()
+        assert len(during) == len(before) + 1
+        assert any("_untracked_probe.py" in f for f in during)
     finally:
         sneak.unlink(missing_ok=True)
+    assert sd.untracked_in_frozen_paths() == before
+
+
+def test_holdout_reason_mentions_untracked_when_that_is_the_blocker(monkeypatch):
+    """When the tag-diff is clean, an untracked file must be the stated cause."""
+    monkeypatch.setattr(sd.subprocess, "run", _fake_git(diff_clean=True,
+                                                       untracked="src/x.py"))
+    ok, reason = sd._holdout_unlocked()
+    assert not ok and "untracked" in reason
+
+
+def _fake_git(*, diff_clean: bool, untracked: str):
+    import subprocess as _sp
+
+    def run(cmd, **kw):
+        out = ""
+        if cmd[:3] == ["git", "tag", "--list"]:
+            out = "hypothesis-v1.1"
+        elif cmd[:2] == ["git", "diff"]:
+            out = "" if diff_clean else "diff!"
+        elif cmd[:2] == ["git", "ls-files"]:
+            out = untracked
+        return _sp.CompletedProcess(cmd, 0, stdout=out, stderr="")
+
+    return run

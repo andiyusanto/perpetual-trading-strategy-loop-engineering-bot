@@ -284,23 +284,31 @@ def _holdout_unlocked() -> tuple[bool, str]:
     if diff:
         return False, f"hypothesis/ or src/ changed since tag {latest_tag}"
 
-    # `git diff` does NOT see untracked files, so without this an entire new
-    # strategy module could sit uncommitted in src/ while the gate still
-    # reported "unlocked" — bypassing the freeze completely. Verified: it did.
-    untracked = subprocess.run(
+    untracked = untracked_in_frozen_paths()
+    if untracked:
+        return False, (
+            f"{len(untracked)} untracked file(s) in hypothesis/ or src/ — commit "
+            f"or remove them; uncommitted code is still code"
+        )
+    return True, latest_tag
+
+
+def untracked_in_frozen_paths() -> list[str]:
+    """Untracked files sitting in the frozen paths.
+
+    `git diff` does NOT report untracked files, so without this an entire new
+    strategy module could sit uncommitted in src/ while the gate still reported
+    "unlocked" — bypassing the freeze completely. This was verified to be
+    exploitable before the check was added.
+    """
+    out = subprocess.run(
         [
             "git", "ls-files", "--others", "--exclude-standard", "--",
             "hypothesis/", "src/",
         ],
         capture_output=True, text=True, cwd=_PROJECT_ROOT,
     ).stdout.strip()
-    if untracked:
-        n = len(untracked.splitlines())
-        return False, (
-            f"{n} untracked file(s) in hypothesis/ or src/ — commit or remove "
-            f"them; uncommitted code is still code"
-        )
-    return True, latest_tag
+    return out.splitlines() if out else []
 
 
 def load_holdout(symbol: str, timeframe: str = "15m", **kw) -> pd.DataFrame:
