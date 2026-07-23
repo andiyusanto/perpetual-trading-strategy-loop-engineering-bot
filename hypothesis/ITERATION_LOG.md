@@ -328,3 +328,74 @@ zero, i.e. a free trade -- and it flattered exactly the six most recent,
 best-looking contracts (headline was "12/21 profitable, +0.77%/yr"). The script
 now merges both sources AND refuses to score any contract whose holding window
 is not fully covered by funding data, rather than silently scoring it as free.
+
+---
+
+## HYPEUSDT funding extremes — INCONCLUSIVE (underpowered) — 2026-07-23
+
+Rationale for testing a newly-listed pair: efficiency is a function of how much
+capital is watching, and far less watches HYPE (listed 2025-05-30) than BTC.
+
+**Spread measured first** (from HYPE aggTrades, free): median **0.257 bps**, 18x
+wider than BTC's 0.014 bps but still irrelevant next to 10 bps of fees. HYPE's
+cost bar is ~11 bps, essentially identical to BTC's. The "thinner market means
+worse costs" concern does not materialise at this fee tier -- fees dominate
+everywhere.
+
+**Segment constraint**: unlike BTC (screened on 2020-2024, outside its segments),
+HYPE's ENTIRE history falls inside its own research/validation/holdout split.
+So this ran on the **research window only** (2025-06-13..2025-12-21), with price
+bars confined to that window so forward returns could not reach into validation.
+HYPE validation and holdout remain sealed.
+
+n=198 extremes (4-hourly funding, 6/day). Result: every horizon MDE 46-494 bps
+against an 11 bps bar. **INCONCLUSIVE (UNDERPOWERED)** -- no horizon could
+resolve a tradeable effect. Point estimates were positive at 4h/1d/2d
+(+14.7/+48.3/+45.1 bps) but with CIs spanning zero and perm p 0.07-0.39, and
+sub-period means flipping sign (+52, +138, +114, -108).
+
+Worth noting what CAN be said: at 4h the test could have detected an effect
+>=46 bps and observed 14.7, so there is no LARGE short-horizon edge. Effects
+between 11 and 46 bps remain unresolvable.
+
+## The power wall — why five tests produced no verdict-grade positive
+
+A hypothesis tested here and REJECTED: that market-neutral spreads would cut the
+noise enough to fix power. Measured over 37,549 overlapping 4h windows:
+
+| series | 4h sigma (bps) |
+|---|--:|
+| BTC outright | 133.4 |
+| ETH outright | 168.9 |
+| SOL outright | 271.1 |
+| BTC-ETH spread | 92.7  (1.44x less noisy) |
+| BTC-SOL spread | 215.5 (**noisier** than BTC alone) |
+| ETH-SOL spread | 202.5 (**noisier**) |
+| BTC vs mean(ETH,SOL) | 131.4 (no reduction) |
+
+Naive spreads inherit the high-vol leg rather than cancelling it; only BTC-ETH
+helps, and only modestly. Cross-sectional construction does NOT rescue power
+here without proper beta weighting.
+
+The binding arithmetic, with sigma(1h) = 66.5 bps and 546 days of data:
+
+    MDE ~ 2.8 * sigma * sqrt(h) / sqrt(T*24/h)   ->  MDE grows LINEARLY with h
+
+| horizon | windows | MDE | provable at 11 bps? |
+|---|--:|--:|:--:|
+| 1h | 13,104 | 1.6 | yes |
+| 4h | 3,276 | 6.5 | yes |
+| 8h | 1,638 | 13.0 | no |
+| 24h | 546 | 39.0 | no |
+| 168h | 78 | 273.3 | no |
+
+**An 11 bps edge is only provable out to ~7h horizons with 18 months of data —
+and only if the signal fires on EVERY bar.** Ours fire rarely: funding extremes
+1.5/day (n=819, MDE 13.0 at 4h), positioning episodes 0.06/day (n=33, MDE 65).
+
+**The squeeze**: long horizons give moves big enough to clear costs but too few
+independent samples to prove it; short horizons give samples but 11 bps consumes
+a larger share of the move. Rare AND small is unprovable with this much data,
+regardless of whether the effect is real.
+
+This is a constraint on what can be VALIDATED, not a claim that no edge exists.
