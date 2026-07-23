@@ -17,6 +17,7 @@ This module stores raw trades faithfully; it does not compute CVD.
 
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import io
 import time
@@ -457,4 +458,48 @@ def download_funding_month(
     }).sort_values("funding_time").reset_index(drop=True)
     out.to_parquet(dest, compression="zstd", index=False)
     log.info("funding.written", file=dest.name, rows=len(out))
+    return dest
+
+
+_METRICS_PREFIX = "data/futures/um/daily/metrics"
+_EPOCH = pd.Timestamp("1970-01-01", tz="UTC")
+
+# Verified from a real file (BTCUSDT 2024-06-10): 5-min snapshots, 288 rows/day.
+_METRICS_COLUMNS = [
+    "create_time", "symbol", "sum_open_interest", "sum_open_interest_value",
+    "count_toptrader_long_short_ratio", "sum_toptrader_long_short_ratio",
+    "count_long_short_ratio", "sum_taker_long_short_vol_ratio",
+]
+
+
+def download_metrics_day(
+    symbol: str, day: "dt.date", out_dir: Path, tmp_dir: Path,
+    *, overwrite: bool = False,
+) -> Path:
+    """One day of 5-minute positioning/OI metrics -> parquet.
+
+    The archive publishes these DAILY only (no monthly rollup), so a long
+    history is many small files: latency-bound rather than bandwidth-bound.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dest = out_dir / f"{symbol}-metrics-{day.isoformat()}.parquet"
+    if dest.exists() and not overwrite:
+        return dest
+    url = (f"{ARCHIVE_DL_BASE}/{_METRICS_PREFIX}/{symbol}/"
+           f"{symbol}-metrics-{day.isoformat()}.zip")
+    df = _fetch_monthly_csv(url, tmp_dir, _METRICS_COLUMNS)
+    ts = pd.to_datetime(df["create_time"], utc=True)
+    out = pd.DataFrame({
+        # Cast to ms EXPLICITLY. pandas>=2 may parse to datetime64[us], in which
+        # case astype("int64")//1e6 silently yields SECONDS -- a 1000x error that
+        # renders every timestamp as 1970 and breaks every downstream join.
+        "create_time": ((ts - _EPOCH) // pd.Timedelta("1ms")).astype("int64"),
+        "open_interest": pd.to_numeric(df["sum_open_interest"], errors="coerce"),
+        "open_interest_value": pd.to_numeric(df["sum_open_interest_value"], errors="coerce"),
+        "top_account_ratio": pd.to_numeric(df["count_toptrader_long_short_ratio"], errors="coerce"),
+        "top_position_ratio": pd.to_numeric(df["sum_toptrader_long_short_ratio"], errors="coerce"),
+        "global_account_ratio": pd.to_numeric(df["count_long_short_ratio"], errors="coerce"),
+        "taker_vol_ratio": pd.to_numeric(df["sum_taker_long_short_vol_ratio"], errors="coerce"),
+    }).sort_values("create_time").reset_index(drop=True)
+    out.to_parquet(dest, compression="zstd", index=False)
     return dest
