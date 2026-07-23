@@ -47,7 +47,40 @@ locked 25th-percentile decel rule). Re-running the same 5 configurations.
 
 | # | Date | Segment | Configuration | Rationale | Outcome |
 |---|------|---------|---------------|-----------|---------|
-| 1r-5r | 2026-07-23 | research | same 5 attribution configs, under v1.1 | Re-test after defect fix | pending |
+| 1r | 2026-07-23 | research | `cvd_only` under v1.1 | attribution baseline | FAIL — 560 trades, 32.3% WR [28.6,36.2], -0.413R, PF 0.41 |
+| 2r | 2026-07-23 | research | `cvd + spearman` | Layer 2 contribution | FAIL — 274, 31.8% [26.3,37.2], -0.452R, PF 0.42 |
+| 3r | 2026-07-23 | research | `cvd + roc` | Layer 3 contribution | FAIL — 150, 31.3% [24.0,38.7], -0.485R, PF 0.32 |
+| 4r | 2026-07-23 | research | `cvd + funding` | funding gate contribution | FAIL — 65, 32.3% [21.5,44.6], -0.387R, PF 0.56 |
+| 5r | 2026-07-23 | research | `full_combined` | v1 hypothesis as specified | FAIL — 7 trades (below 100 minimum), 14.3%, -1.272R, PF 0.07 |
+
+### Result of runs 1r-5r (valid test, HYPOTHESIS v1.1)
+
+The defect fix was material and worked as intended: `early_roc` exits fell from
+72% to 19%, mean hold rose 8.7 -> 17.8 bars, win rate rose 19.1% -> 32.3%. The
+test is now a fair one — and the hypothesis fails it.
+
+Gates failed (KILL_CRITERIA.md):
+- **Win-rate floor**: all configs below the 40% breakeven; 1r-3r have 95% CIs
+  entirely below 40%.
+- **Profit factor**: 0.07-0.56, all below the 1.10 trigger.
+- **Component attribution**: layers SUBTRACT value. CVD-only (-0.413R) beats the
+  full stack (-1.272R), and the full stack collapses the sample to 7 trades.
+  Per KILL_CRITERIA this alone says "simplify rather than keep them".
+- **Sample size**: 5r's 7 trades is below the 100-trade minimum.
+- **Cost realism**: fees are 113-193% of gross PnL. No configuration's raw edge
+  covers the ~16bps round trip.
+
+**Open question for the adversarial review (NOT acted on here):** at R:R 1.5 a
+random entry wins ~40% of the time. Observed 32.3% is materially WORSE than
+random, which is a signature worth explaining before the hypothesis is buried.
+Candidate causes: (a) the mechanism is genuinely anti-predictive on this
+pair/timeframe; (b) entry is ~50 minutes after the swing (3 bars to confirm the
+fractal + next 5m close), so the structural stop sits unusually close to entry
+by fill time. Deliberately not "fixed" here — changing entry timing after seeing
+results would be result-chasing, and would need a new hypothesis version.
+
+**Budget used: 5 / 8.** Validation and holdout remain UNOPENED (0/3 and 0/1) —
+correctly, since nothing passed research.
 
 Fixed across all five (not separate combinations — they are the locked v1
 baseline from HYPOTHESIS.md): swing 3/3, CVD window 20, Spearman window 20,
