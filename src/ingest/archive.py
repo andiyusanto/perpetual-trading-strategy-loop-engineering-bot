@@ -341,3 +341,120 @@ def download_aggtrades_month(
 def _parquet_ts_bounds(path: Path) -> tuple[int, int]:
     col = pq.read_table(path, columns=["timestamp"])["timestamp"]
     return pa.compute.min(col).as_py(), pa.compute.max(col).as_py()
+
+
+# ---------------------------------------------------------------------------
+# Other monthly datasets: klines and fundingRate.
+#
+# Screening only needs close prices, and klines are megabytes where aggTrades
+# are gigabytes — so years of history become cheap. aggTrades stay necessary
+# only for order-flow signals (CVD).
+# ---------------------------------------------------------------------------
+
+_KLINES_PREFIX = "data/futures/um/monthly/klines"
+_FUNDING_PREFIX = "data/futures/um/monthly/fundingRate"
+
+# USD-M futures monthly klines CSV layout.
+_KLINE_COLUMNS = [
+    "open_time", "open", "high", "low", "close", "volume", "close_time",
+    "quote_volume", "count", "taker_buy_volume", "taker_buy_quote_volume",
+    "ignore",
+]
+
+# fundingRate CSV layout (verified against a downloaded file).
+_FUNDING_COLUMNS = ["calc_time", "funding_interval_hours", "last_funding_rate"]
+
+_INTERVAL_MS = {
+    "1m": 60_000, "5m": 300_000, "15m": 900_000,
+    "1h": 3_600_000, "4h": 14_400_000, "1d": 86_400_000,
+}
+
+
+def _fetch_monthly_csv(url: str, tmp_dir: Path, columns: list[str]) -> pd.DataFrame:
+    """Download + checksum-verify a monthly zip and return its CSV as a frame."""
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    name = url.rsplit("/", 1)[-1]
+    zpath = tmp_dir / name
+    _download_to_file(url, zpath)
+    expected = _expected_sha256(url + ".CHECKSUM")
+    actual = _sha256_of(zpath)
+    if expected != actual:
+        zpath.unlink(missing_ok=True)
+        raise ChecksumMismatch(f"{name}: expected {expected}, got {actual}")
+    try:
+        with zipfile.ZipFile(zpath) as zf:
+            inner = zf.namelist()[0]
+            with zf.open(inner) as raw:
+                head = raw.read(256)
+            has_hdr = any(c.encode() in head.split(b"\n", 1)[0] for c in columns)
+            with zf.open(inner) as raw:
+                df = pd.read_csv(
+                    raw, header=0 if has_hdr else None,
+                    names=None if has_hdr else columns,
+                )
+    finally:
+        zpath.unlink(missing_ok=True)
+    return df
+
+
+def download_klines_month(
+    symbol: str, year: int, month: int, interval: str, out_dir: Path, tmp_dir: Path,
+    *, overwrite: bool = False,
+) -> Path:
+    """One month of klines -> parquet with this project's bar column names.
+
+    ``close_time`` is normalised to ``open_time + interval`` (Binance publishes
+    ``open_time + interval - 1ms``) so it matches the aggTrades-derived bars:
+    a bar is knowable at the instant it closes.
+    """
+    if interval not in _INTERVAL_MS:
+        raise ValueError(f"unsupported interval {interval!r}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dest = out_dir / f"{symbol}-{interval}-{year:04d}-{month:02d}.parquet"
+    if dest.exists() and not overwrite:
+        return dest
+    url = (f"{ARCHIVE_DL_BASE}/{_KLINES_PREFIX}/{symbol}/{interval}/"
+           f"{symbol}-{interval}-{year:04d}-{month:02d}.zip")
+    df = _fetch_monthly_csv(url, tmp_dir, _KLINE_COLUMNS)
+    step = _INTERVAL_MS[interval]
+    out = pd.DataFrame({
+        "open_time": df["open_time"].astype("int64"),
+        "close_time": df["open_time"].astype("int64") + step,
+        "open": df["open"].astype(float),
+        "high": df["high"].astype(float),
+        "low": df["low"].astype(float),
+        "close": df["close"].astype(float),
+        "volume": df["volume"].astype(float),
+        "num_trades": df["count"].astype("int64"),
+    }).sort_values("open_time").reset_index(drop=True)
+    out.to_parquet(dest, compression="zstd", index=False)
+    log.info("klines.written", file=dest.name, rows=len(out))
+    return dest
+
+
+def download_funding_month(
+    symbol: str, year: int, month: int, out_dir: Path, tmp_dir: Path,
+    *, overwrite: bool = False,
+) -> Path:
+    """One month of settled funding -> parquet, matching the REST schema.
+
+    Archive column ``calc_time`` is the settlement timestamp and maps to
+    ``funding_time``; ``last_funding_rate`` maps to ``funding_rate``. The
+    archive carries no mark price, so ``mark_price`` is NaN.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dest = out_dir / f"{symbol}-fundingRate-{year:04d}-{month:02d}.parquet"
+    if dest.exists() and not overwrite:
+        return dest
+    url = (f"{ARCHIVE_DL_BASE}/{_FUNDING_PREFIX}/{symbol}/"
+           f"{symbol}-fundingRate-{year:04d}-{month:02d}.zip")
+    df = _fetch_monthly_csv(url, tmp_dir, _FUNDING_COLUMNS)
+    out = pd.DataFrame({
+        "symbol": symbol,
+        "funding_time": df["calc_time"].astype("int64"),
+        "funding_rate": pd.to_numeric(df["last_funding_rate"], errors="coerce"),
+        "mark_price": float("nan"),
+    }).sort_values("funding_time").reset_index(drop=True)
+    out.to_parquet(dest, compression="zstd", index=False)
+    log.info("funding.written", file=dest.name, rows=len(out))
+    return dest

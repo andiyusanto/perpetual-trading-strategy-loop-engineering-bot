@@ -308,3 +308,76 @@ def format_report(rep: dict) -> str:
         lines.append(f"\nsub-period means ({rep['subperiods']['horizon']}): [{b}]")
     lines.append(f"\nVERDICT  : {rep['verdict']}")
     return "\n".join(lines)
+
+
+def screen_multi(
+    pairs: list[tuple[pd.DataFrame, SignalSet]],
+    *,
+    name: str,
+    horizons_min: tuple[int, ...] = DEFAULT_HORIZONS_MIN,
+    cost_bps: float = DEFAULT_COST_BPS,
+    n_perm: int = 200,
+    log: bool = True,
+    segment: str = "research",
+) -> dict:
+    """Pool the SAME signal rule across several instruments.
+
+    Each pair's forward returns are computed against ITS OWN price series and
+    only then concatenated — pooling price series would be meaningless.
+
+    Returns are concatenated in signal-time order so the block bootstrap treats
+    near-simultaneous events across correlated pairs as one cluster. That
+    matters here: funding extremes tend to fire on BTC/ETH/SOL at the same time,
+    so a naive i.i.d. treatment of pooled n would overstate precision.
+    """
+    report: dict = {
+        "signal": name, "segment": segment, "cost_bps": cost_bps,
+        "run_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "pooled_from": [s.name for _, s in pairs],
+        "n_signals": int(sum(len(s) for _, s in pairs)),
+        "horizons": {},
+    }
+    all_times = np.concatenate([s.times_ms for _, s in pairs]) if pairs else np.array([])
+    report["distinct_days"] = int(np.unique(all_times // 86_400_000).size) if all_times.size else 0
+
+    any_tradeable = any_powered = False
+    for h in horizons_min:
+        chunks, times = [], []
+        for bars, sig in pairs:
+            r = forward_returns(bars, sig.times_ms, sig.direction, h)
+            chunks.append(r)
+            times.append(sig.times_ms)
+        r_all = np.concatenate(chunks)
+        t_all = np.concatenate(times)
+        order = np.argsort(t_all)          # time order => blocks capture clusters
+        v = r_all[order]
+        v = v[~np.isnan(v)]
+        if v.size < 2:
+            continue
+        mean = float(v.mean())
+        se = float(v.std(ddof=1) / np.sqrt(v.size))
+        t = mean / se if se > 0 else float("nan")
+        lo, hi = _block_bootstrap_ci(v)
+        mde = 2.80 * se
+        powered = bool(mde <= cost_bps)
+        clears = bool(lo > cost_bps)
+        any_powered |= powered
+        any_tradeable |= clears
+        report["horizons"][f"{h}m"] = {
+            "n": int(v.size), "mean_bps": round(mean, 3), "se_bps": round(se, 3),
+            "mde_bps": round(mde, 3), "powered": powered,
+            "t_stat": round(float(t), 3), "ci95_bps": [round(lo, 3), round(hi, 3)],
+            "frac_positive": round(float((v > 0).mean()), 4),
+            "perm_p": None, "clears_cost": clears,
+        }
+
+    if any_tradeable:
+        report["verdict"] = "TRADEABLE EDGE"
+    elif not any_powered:
+        report["verdict"] = "INCONCLUSIVE (UNDERPOWERED)"
+    else:
+        report["verdict"] = "NO TRADEABLE EDGE"
+    report["any_horizon_powered"] = any_powered
+    if log:
+        _append_log(report)
+    return report

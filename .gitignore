@@ -13,3 +13,4 @@ data/holdout/
 logs/*.log
 *.parquet
 .pytest_cache/
+data/screening/
