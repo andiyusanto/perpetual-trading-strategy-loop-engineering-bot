@@ -173,9 +173,13 @@ These exist to prevent data-snooping and self-delusion. Follow them exactly.
       (hardcoded per-pair 50/25/25 bounds; absolute forward isolation +
        bounded 90d BACKWARD warm-up only; validation budget 3, holdout 1 +
        git-tag gate; 18 tests)
-- [ ] Lock `hypothesis/HYPOTHESIS.md` + `hypothesis/KILL_CRITERIA.md`, commit + tag
-- [ ] Backtest on research set (walk-forward)
-- [ ] Validate once/twice on validation set
+- [x] Lock `hypothesis/HYPOTHESIS.md` + `hypothesis/KILL_CRITERIA.md`, commit + tag
+      (tags hypothesis-v1, then hypothesis-v1.1 after the early-exit defect fix)
+- [x] Backtest on research set (walk-forward)
+      (BTCUSDT, 7 folds, 5 attribution configs — ALL FAIL the kill criteria:
+       best 32.3% WR vs 40% breakeven, PF 0.07-0.56, layers subtract value.
+       See hypothesis/ITERATION_LOG.md. Budget used 5/8.)
+- [ ] Validate once/twice on validation set  <-- NOT opened: nothing passed research
 - [ ] Adversarial review pass (separate from the building pass)
 - [ ] Open holdout once — final verdict
 
