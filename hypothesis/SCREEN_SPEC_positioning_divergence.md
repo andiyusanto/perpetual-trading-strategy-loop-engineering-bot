@@ -177,3 +177,17 @@ a silent retry.
   which may make it an extension of the funding lineage instead.
 - Screens run to date: 9 (all logged in `results/screening_log.jsonl`). A future
   significance claim must account for that search.
+
+---
+
+# OUTCOME — 2026-07-23 (appended after the run; nothing above was edited)
+
+Section 8 proxy check: **INDEPENDENT** (0/11 episodes at a funding extreme,
+Spearman -0.127, p=0.71).
+
+Power pre-check on a 181-day sample: 11 episodes, i.e. ~96 for BTC over the full
+window and ~288 across three pairs, against the ~515+ needed to reach
+MDE <= the cost bar. **Result: SHELVED — untestable at power on available data.**
+
+The full download was not made. The pre-registered threshold and
+de-duplication rule were NOT relaxed. See ITERATION_LOG.md for detail.

@@ -64,9 +64,22 @@ SCREENING_LOG = _PROJECT_ROOT / "results" / "screening_log.jsonl"
 
 MS_PER_MIN = 60_000
 
-# Binance USD-M taker round trip (2 x 5bps) + 2 x 3bps slippage. A signal whose
-# edge does not clear this is real-but-untradeable as a taker.
-DEFAULT_COST_BPS = 16.0
+# Round-trip cost bar, DERIVED rather than guessed (changed 2026-07-23):
+#   2 x taker 5.0 bps            = 10.0   <- fees dominate; this is the floor
+#   2 x impact allowance 0.5 bps =  1.0   <- measured spread is only 0.014 bps
+#                                  -----
+#                                   11.0 bps
+# Previously 16.0, which assumed 3 bps/side of slippage. Measurement from 869M
+# BTCUSDT aggTrades showed the spread is one tick 89.2% of the time (0.014 bps).
+#
+# This LOWERS the bar, i.e. makes a pass easier -- exactly the kind of change
+# that can resurrect a dead result, so it was checked before being applied:
+# every prior verdict is unchanged at 11.0 (funding-extreme CI lower bounds were
+# 1.48/8.45/2.82 bps, still short; positioning MDE 21.4 bps, still underpowered).
+#
+# A patient strategy filling passively on entry would face ~7 bps
+# (maker 2 + taker 5); that is not assumed here.
+DEFAULT_COST_BPS = 11.0
 
 DEFAULT_HORIZONS_MIN = (30, 60, 120, 240, 480, 1440)
 

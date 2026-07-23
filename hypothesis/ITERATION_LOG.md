@@ -198,3 +198,89 @@ disproven hypothesis and NOT iterated further within the same family.
 
 Budget used: 5/8 — the remaining 3 are deliberately left unspent. Validation
 (0/3) and holdout (0/1) were never opened.
+
+---
+
+## Positioning divergence — SHELVED AT POWER, not disproven — 2026-07-23
+
+Pre-registered in `SCREEN_SPEC_positioning_divergence.md` before any positioning
+data was examined. Run on a 181-day sample (2021-05/06, 2023-01/02, 2024-05/06)
+as a cheap pre-check before committing to a ~1,580-file download.
+
+**Section 8 proxy check: INDEPENDENT.** 0 of 11 episodes coincided with a
+funding extreme; Spearman(positioning pct, funding pct) = -0.127 (p=0.71). So it
+is genuinely not a restatement of the funding mechanism and would have earned
+its own budget.
+
+**But it cannot be tested at the required power on available data.** The
+pre-registered episode rule (fire on the crossing INTO an extreme, hysteresis
+re-arm, 24h same-direction limit) compresses ~4,700 raw 5-min rows to one
+independent episode — correctly, since without it ~52,000 fake-independent rows
+would give spuriously tight intervals and a FALSE PASS. The cost is sample size:
+
+| scope | episodes | MDE | vs cost bar |
+|---|--:|--:|---|
+| BTC alone, 2020-09..2024-12 | ~96 | 37.1 bps | underpowered |
+| BTC+ETH+SOL, same window | ~288 | 21.4 bps | underpowered |
+| needed for MDE <= bar | ~515+ | — | 1.8x short |
+
+Observed rate: 11 episodes / 181 days. The remaining ~1,400-file download was
+NOT made, because it would have bought a guaranteed INCONCLUSIVE.
+
+**Status: SHELVED (untestable at power), NOT disproven.** Revisit only if the
+metrics history grows or a legitimate source of more independent episodes
+appears. Per spec section 11 the threshold was NOT widened and de-duplication
+was NOT relaxed to manufacture episodes — doing so because the honest version
+came up short is how the CVD cycle went wrong.
+
+Also observed, worth recording: 2021 metrics coverage is badly fragmented (that
+block shattered into ~18 pieces, several of 2-6 rows, yielding zero usable
+episodes), and the direction split was 10 short / 1 long — a signal firing ~90%
+one way is close to a directional bet on the sample period.
+
+**Bug found and fixed during this run:** metrics `create_time` was converted
+1000x too small (pandas>=2 parses to `datetime64[us]`, so `//1e6` yields seconds
+not milliseconds). Every timestamp rendered as 1970, the funding join matched
+0/11 episodes, and the FIRST proxy verdict printed a confident "INDEPENDENT"
+computed from an empty set. Caught only because block dates printed as
+1970-01-19. Fixed unit-agnostically; 181 files repaired; regression test added.
+
+## Cost bar corrected: 16.0 -> 11.0 bps — 2026-07-23
+
+The single most load-bearing number in every verdict so far had never been
+measured. It was `2x taker(5) + 2x slippage(3)`, where the 3 bps was a guess
+carried from `.env.example`.
+
+Measured from 869M BTCUSDT aggTrades already on disk (zero download): consecutive
+opposite-side trades are **exactly one tick apart 89.2% of the time**. Tick is
+$0.10, so at ~$70k the spread is **0.014 bps** — the assumption was ~200x too
+pessimistic on the spread component.
+
+    assumed:  2 x taker 5.0 + 2 x slippage 3.0 = 16.0 bps
+    derived:  2 x taker 5.0 + 2 x impact  0.5  = 11.0 bps   (fees are the floor)
+
+**This LOWERS the bar, so it was checked against past results BEFORE applying** —
+a cheaper cost bar is exactly the kind of change that can resurrect a dead
+result:
+
+| result | CI lower bound | vs 16 bps | vs 11 bps |
+|---|--:|:--:|:--:|
+| funding, BTC 4h | 1.48 | fail | fail |
+| funding, BTC 1d | 8.45 | fail | fail |
+| funding, BTC 2d | 2.82 | fail | fail |
+| positioning MDE (3 pairs) | 21.4 | underpowered | underpowered |
+
+**No verdict changes.** Both conclusions are robust to the cost assumption,
+which is the most valuable output of the exercise — not a rescue.
+
+Caveat kept explicit: slippage is now an allowance for MARKET IMPACT, not the
+spread. aggTrades carries no resting-order sizes, so impact at size is still
+unmeasured. The backtest's `qty=1.0 BTC` is ~333x the median trade (0.003 BTC)
+and its impact is not in the model. Settling that needs order-book depth; the
+~25-minute bookTicker sample was deliberately deferred until a candidate
+actually passes screening and needs sizing.
+
+Related fix: `r_multiple` divided by per-unit risk while `net_pnl` scales with
+quantity, so R would have scaled with position size. Identical at qty=1.0 (every
+result to date) and silently wrong above it. `position_qty` is now an explicit
+parameter rather than a hardcoded literal.

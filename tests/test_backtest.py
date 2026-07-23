@@ -314,3 +314,27 @@ def test_early_exit_needs_magnitude_not_just_sign():
                   StrategyParams(time_stop_bars_15m=3, reaccel_ratio=10.0),
                   CostModel())
     assert tr.iloc[0]["exit_reason"] != EXIT_EARLY
+
+
+def test_r_multiple_is_invariant_to_position_size():
+    """Regression: net_pnl scales with quantity, so dividing by per-unit risk
+    made R scale with position size. Identical at qty=1.0 (every result to
+    date), silently wrong above it."""
+    n = 8
+    highs = [100.0] * n
+    lows = [100.0] * n
+    highs[3] = 200.0
+    bars5 = _bars(n, TF5, highs, lows, [100.0] * n)
+    r1 = simulate(_intent(LONG, 90.0, 0), bars5, _flat_bars15(),
+                  StrategyParams(position_qty=1.0), CostModel())
+    r5 = simulate(_intent(LONG, 90.0, 0), bars5, _flat_bars15(),
+                  StrategyParams(position_qty=5.0), CostModel())
+    assert r5.iloc[0]["net_pnl"] == pytest.approx(5 * r1.iloc[0]["net_pnl"])
+    assert r5.iloc[0]["r_multiple"] == pytest.approx(r1.iloc[0]["r_multiple"])
+
+
+def test_cost_model_reflects_measured_spread():
+    """Round trip is fee-dominated once slippage is an impact allowance."""
+    c = CostModel()
+    assert c.round_trip_bps == pytest.approx(11.0)   # 2*5 taker + 2*0.5 impact
+    assert 2 * c.taker_fee_bps == 10.0               # fees are the floor

@@ -15,6 +15,23 @@ Conservatism choices, all deliberately pessimistic:
     confirmed signal, which in practice means crossing the spread; assuming
     maker fills would be assuming free optionality we have not demonstrated.
   - Slippage is charged on BOTH sides, always against us.
+
+MEASURED 2026-07-23 (from 869M BTCUSDT aggTrades already on disk, not assumed):
+the quoted spread is ONE TICK 89.2% of the time. Tick is $0.10, so at ~$70k
+that is **0.014 bps** — the original 3.0 bps/side slippage default was ~200x too
+pessimistic on the spread component.
+
+``slippage_bps`` is therefore reinterpreted: it is an allowance for MARKET
+IMPACT, not for the spread. Impact depends on order size relative to resting
+depth, which aggTrades cannot measure (it carries no resting-order sizes). The
+default below is a modest allowance for small size; **it must be raised for
+large orders**, and settling it properly needs order-book depth data.
+
+For scale: the median BTCUSDT trade is ~0.003 BTC. A 1.0 BTC order is ~333x
+that, and its impact is NOT captured by this default.
+
+Fees dominate regardless: 2 x 5bps taker = 10 bps is the floor no matter how
+tight the book is.
 """
 
 from __future__ import annotations
@@ -33,7 +50,9 @@ class CostModel:
 
     taker_fee_bps: float = 5.0
     maker_fee_bps: float = 2.0
-    slippage_bps: float = 3.0
+    # Impact allowance, NOT spread (measured spread is ~0.014 bps). Raise this
+    # for size; see module docstring.
+    slippage_bps: float = 0.5
 
     def __post_init__(self) -> None:
         for name in ("taker_fee_bps", "maker_fee_bps", "slippage_bps"):

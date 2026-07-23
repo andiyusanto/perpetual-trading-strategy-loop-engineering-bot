@@ -99,6 +99,11 @@ class StrategyParams:
     # 1.0 = risk must at least cover fees+slippage; below that a trade
     # cannot be profitable at any R.
     min_risk_cost_multiple: float = 1.0
+    # Position size in base units. Was an unexamined hardcoded 1.0, which for
+    # BTC is ~$100k notional and ~333x the median trade -- large enough that
+    # market impact would be real and is NOT in the cost model. Kept at 1.0 so
+    # existing results are unchanged, but it is now a visible choice.
+    position_qty: float = 1.0
 
     def with_layers(self, *layers: str) -> "StrategyParams":
         return replace(self, enabled_layers=tuple(layers))
@@ -272,7 +277,7 @@ def simulate(
         )
         exit_px = costs.fill_price(side, exit_ref, is_entry=False)
 
-        qty = 1.0  # unit position; PnL is reported in R and in price terms
+        qty = params.position_qty
         gross = (exit_px - entry_px) if side == LONG else (entry_px - exit_px)
         fees = costs.round_trip_cost(entry_px, exit_px, qty)
         net = gross * qty - fees
@@ -295,7 +300,10 @@ def simulate(
                 "gross_pnl": gross * qty,
                 "fees": fees,
                 "net_pnl": net,
-                "r_multiple": net / risk,
+                # Divide by risk*qty, not risk: net_pnl scales with size, so
+                # dividing by per-unit risk would make R scale with position
+                # size. Identical at qty=1.0 (all results to date), wrong above it.
+                "r_multiple": net / (risk * qty),
                 "bars_held": exit_idx - e,
             }
         )
