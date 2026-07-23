@@ -101,3 +101,100 @@ Costs applied from run #1: taker 5bps, maker 2bps, slippage 3bps (round trip
   pass; NOT tuned, since that would be fitting to research data.
 - These entries were written when the runs were launched, before results were
   read, so the log records what was *tried*, not a post-hoc selection.
+
+---
+
+## Adversarial review — 2026-07-23 (independent pass)
+
+Conducted by a separate reviewer that did not build the engine, per methodology
+rule 9. It reproduced the run exactly (identical skip counters and trade counts)
+before analysing, and modified nothing in `src/` or `hypothesis/`.
+
+### VERDICT: the negative result is SOUND. The mechanism is disproven.
+
+Machinery-independent test — forward return from all 705 cvd_only signals,
+signed by intended direction, with no exit rules, no costs, no R:R involved:
+
+| horizon | mean | t | frac > 0 |
+|---|--:|--:|--:|
+| 30 min | -0.01 bps | -0.01 | 0.495 |
+| 60 min | -0.50 bps | -0.28 | 0.493 |
+| 150 min | -0.29 bps | -0.10 | 0.488 |
+| 300 min | -2.44 bps | -0.66 | 0.505 |
+
+CVD divergence at 15m fractal swings on BTCUSDT carries **zero directional
+information** at every horizon tested, against a 16 bps round trip. This is
+independent of every engine choice, so the failure is a property of the
+mechanism, not of the implementation. **No look-ahead or leakage was found**
+(truncation-invariance 186/186, 265/265, 340/340 exact; 15m->5m mapping max
+lookahead 0 ms; per-fold calibration confirmed isolated).
+
+### CLAIMS WITHDRAWN — earlier entries in this log were wrong
+
+1. **"Materially worse than random" — WITHDRAWN.** The permutation test that
+   KILL_CRITERIA requires had never actually been run (`run_backtest.py` never
+   called `permutation_test_vs_random_entries`). Measured over 200 reps through
+   the same simulate() machinery, the random-entry baseline is **27.2% win /
+   -0.388 R**, not 40%. The strategy BEATS random on win rate (p = 0.005) and
+   TIES it on expectancy. The error was comparing a post-cost win rate against a
+   pre-cost breakeven — an inconsistency that also exists in the code
+   (`metrics.breakeven_win_rate` has no cost term but is printed beside a net
+   win rate).
+
+2. **"Layers SUBTRACT value" — WITHDRAWN.** That rested on comparing -0.413 R
+   (n=560) with -1.272 R (n=7). n=7 is uninterpretable. The supportable
+   statement is that every layer is zero-information: zero-cost expectancy
+   -0.004, -0.013, -0.057, +0.020 R for configs 1-4.
+
+3. **"Fees are 113-193% of gross PnL" — WITHDRAWN as meaningless.** The ratio
+   explodes as gross -> 0 (it reads 6667% for config 4). The stable statement is
+   **cost 0.42 R/trade against a gross edge of 0.00 R/trade** (fees 0.263 R +
+   slippage 0.158 R).
+
+4. **Funding-gate asymmetry (0/138 bearish) — CLOSED, does not generalise.**
+   Over the full research set the gate opens on 45/454 bearish (9.9%) and
+   46/402 bullish (11.4%).
+
+5. Earlier candidate cause "the mechanism is anti-predictive" — **rejected**:
+   inverting the direction also loses (net -0.443 R, zero-cost -0.040 R). It is
+   noise, not inversion. The ~50-minute entry lag IS confirmed as the operative
+   mechanism, but its consequence is cost domination, not a bad signal.
+
+### Gates NOT evaluated (previously left ambiguous)
+
+These KILL_CRITERIA requirements were never run and must not be read as passed
+or failed: (a) +/-20%/+/-40% parameter sensitivity, (b) regime consistency
+(trending vs ranging), (c) permutation test — now run during this review,
+(d) effective sample size / cross-pair clustering correction.
+
+They are moot for the verdict: a signal with zero forward information cannot be
+rescued by parameter choice.
+
+### Engine defects recorded (NOT fixed — would require a new hypothesis version)
+
+- `min_risk_cost_multiple = 1.0` admits trades where round-trip cost consumes
+  up to 100% of risk. A 5-10x floor would have surfaced the cost problem as a
+  "no trades" result instead of a mysterious win rate. 98/705 dropped.
+- 30 intents (4.3%) dropped by overlap suppression with no log line; only
+  `invalid_stop` and `risk_below_cost` are logged. Immaterial to the result
+  (`allow_overlapping=True` gives 31.9% / -0.424 R).
+- Pessimistic-intrabar rule never fires (0/560 bars contain both stop and
+  target; target sits ~4.7 ATR away). The claimed conservatism is inert.
+- CVD anchoring spec deviation: a trailing 20-bar rolling sum makes
+  `CVD_t2 - CVD_t1` equal net flow between swings MINUS flow in the 20 bars
+  before swing 1, not the classic "cumulative CVD failed to confirm"
+  (correlation +0.723, flag agreement 74.7%). Both definitions give the same
+  null result.
+- Time stop applied unconditionally; HYPOTHESIS.md says "with no significant
+  movement". Immaterial (widening the time stop reveals no edge).
+
+### Conclusion
+
+**HYPOTHESIS v1.1 is DISPROVEN on BTCUSDT / 15m+5m / Binance USD-M.** Not a
+marginal miss, and not a cost artifact that a cheaper venue would fix: the
+signal is a coin flip that pays 16 bps a round trip against a 42 bps structural
+stop. Per HYPOTHESIS.md's own falsification clause this is recorded as a
+disproven hypothesis and NOT iterated further within the same family.
+
+Budget used: 5/8 — the remaining 3 are deliberately left unspent. Validation
+(0/3) and holdout (0/1) were never opened.
