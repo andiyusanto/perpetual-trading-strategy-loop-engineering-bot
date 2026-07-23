@@ -150,3 +150,53 @@ windows, there is no combination that clears the win-rate floor after real
 costs, with parameter sensitivity that isn't a fragile knife-edge — the
 mechanism does not hold on this pair/timeframe/exchange, and should be
 recorded as a disproven hypothesis, not iterated indefinitely.
+
+---
+
+# v1.1 — 2026-07-23 (early-exit specification corrected)
+
+**This is a NEW dated entry, not an edit to v1.** v1 above stands as written.
+
+## What happened
+
+The first research run (walk-forward, BTCUSDT, 7 folds, all 5 attribution
+configs) returned uniformly negative results — every configuration far below the
+40% breakeven win rate. **That run is not a valid test of v1**, and is recorded
+in ITERATION_LOG.md as invalid-by-defect rather than as evidence against the
+hypothesis.
+
+Cause: v1 specifies the early exit as "CVD ROC **re-accelerates** in the
+direction of the original trend". The implementation tested only the SIGN of
+CVD ROC. Measured on the research set, CVD ROC is a zero-mean oscillator —
+49.7% of bars positive, 50.3% negative, mean same-sign run 5.88 bars — so a
+sign test fires within roughly an hour on essentially any trade. It terminated
+72% of trades (416/575) and only 39/575 ever reached target. The exit rule, not
+the signal, produced the result.
+
+## The correction
+
+"Re-accelerates" is now specified as a **magnitude AND direction** condition,
+defined as the mirror image of the Layer 3 deceleration rule so that it is not
+a free parameter chosen to improve results:
+
+    early exit  <=>  sign(CVD ROC) matches the original trend
+                AND  |CVD ROC| >= reaccel_ratio * prior-peak |CVD ROC|
+
+`reaccel_ratio` is calibrated per fold on the TRAINING window only, as the
+**75th percentile** of `|ROC| / prior-peak |ROC|` — exactly the mirror of
+`decel_ratio` at the 25th percentile of the same distribution.
+
+## Honesty note
+
+This correction was made AFTER seeing v1's results, which is precisely the
+situation methodology rule 1 governs. Two things make it a defect fix rather
+than a result-chasing tune:
+
+1. The hypothesis TEXT is unchanged — v1 always said "re-accelerates". Only the
+   code was wrong; it implemented a different rule than the one specified.
+2. The new threshold is fixed by symmetry with an already-locked rule (75th
+   percentile mirroring the locked 25th), not selected from a search over
+   values. No alternative value was tried.
+
+If the corrected run also fails, that is a result about the hypothesis and must
+be recorded as such — not re-corrected again.

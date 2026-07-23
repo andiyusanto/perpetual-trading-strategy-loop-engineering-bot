@@ -289,3 +289,28 @@ def test_calibrated_decel_ratio_stays_in_valid_domain():
     })
     p = calibrate_thresholds(bars, StrategyParams())
     assert 0 < p.decel_ratio <= 1.0   # the domain roc_deceleration accepts
+
+
+def test_early_exit_needs_magnitude_not_just_sign():
+    """Regression: a bare sign test fired on ~50% of bars and killed trades at
+    random. Re-acceleration must require |ROC| >= ratio * prior-peak |ROC|."""
+    from src.backtest.engine import EXIT_EARLY
+    n = 40
+    # 15m context with real CVD flow so cvd_roc / prior_peak_roc are defined
+    m = 200
+    delta = np.tile([50.0, -50.0], m // 2)  # oscillates sign every bar, small |ROC|
+    close = np.full(m, 100.0)
+    bars15 = pd.DataFrame({
+        "open_time": [i * TF15 for i in range(m)],
+        "close_time": [(i + 1) * TF15 for i in range(m)],
+        "open": close, "high": close, "low": close, "close": close,
+        "vwap": close, "volume": 1.0, "buy_vol": 0.0, "sell_vol": 0.0,
+        "delta": delta, "num_trades": 1,
+    })
+    bars5 = _bars(n, TF5, [100.5] * n, [99.5] * n, [100.0] * n)
+    # ROC sign flips constantly, but magnitude never exceeds prior peak ->
+    # with a strict ratio the early exit must NOT fire; trade ends on time stop.
+    tr = simulate(_intent(SHORT, 110.0, 0, kind="bearish"), bars5, bars15,
+                  StrategyParams(time_stop_bars_15m=3, reaccel_ratio=10.0),
+                  CostModel())
+    assert tr.iloc[0]["exit_reason"] != EXIT_EARLY

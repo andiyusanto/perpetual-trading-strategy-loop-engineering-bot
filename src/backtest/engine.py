@@ -82,6 +82,13 @@ class StrategyParams:
     roc_window: int = DEFAULT_ROC_WINDOW
     peak_lookback: int = DEFAULT_PEAK_LOOKBACK
     decel_ratio: float = DEFAULT_DECEL_RATIO
+    # Early exit fires only when CVD ROC RE-ACCELERATES in the original
+    # trend direction: |ROC| >= reaccel_ratio * prior-peak |ROC|, AND the
+    # sign matches. Defined as the mirror of decel_ratio so it is a
+    # magnitude test, not a sign test. A bare sign test fires on ~50% of
+    # bars (CVD ROC is a zero-mean oscillator) and terminates trades at
+    # random -- which is exactly what it did before this was corrected.
+    reaccel_ratio: float = 1.0
     funding: FundingGateParams = FundingGateParams()
     rr_ratio: float = 1.5           # take profit at 1.5R
     time_stop_bars_15m: int = 10    # HYPOTHESIS.md: 8-12
@@ -213,7 +220,7 @@ def simulate(
 
     # 15m ROC series for the early-exit rule, mapped onto 5m bars by "last
     # CLOSED 15m bar at or before this 5m bar's close".
-    roc15 = _roc15_lookup(bars15, bars5, params)
+    roc15, peak15 = _roc15_lookup(bars15, bars5, params)
 
     bars_per_15m = 3
     max_hold = params.time_stop_bars_15m * bars_per_15m
@@ -260,7 +267,8 @@ def simulate(
         )
 
         exit_idx, exit_ref, reason = _walk_to_exit(
-            e, side, stop_px, target_px, hi5, lo5, cl5, roc15, max_hold, it["kind"]
+            e, side, stop_px, target_px, hi5, lo5, cl5, roc15, peak15,
+            max_hold, it["kind"], params.reaccel_ratio
         )
         exit_px = costs.fill_price(side, exit_ref, is_entry=False)
 
@@ -315,8 +323,10 @@ def _walk_to_exit(
     lo5: np.ndarray,
     cl5: np.ndarray,
     roc15: np.ndarray,
+    peak15: np.ndarray,
     max_hold: int,
     kind: str,
+    reaccel_ratio: float,
 ) -> tuple[int, float, str]:
     """Advance bar by bar to the exit. Pessimistic on ambiguous bars."""
     n = len(cl5)
@@ -331,12 +341,15 @@ def _walk_to_exit(
             return i, stop_px, EXIT_STOP
         if hit_tgt:
             return i, target_px, EXIT_TARGET
-        # early exit: CVD ROC re-accelerating in the ORIGINAL trend direction
-        r = roc15[i]
-        if not np.isnan(r):
-            if kind == BEARISH and r > 0:      # was an uptrend; flow re-accelerating up
+        # early exit: CVD ROC RE-ACCELERATING in the ORIGINAL trend direction.
+        # Magnitude AND direction, per HYPOTHESIS.md. Sign alone is not
+        # re-acceleration -- CVD ROC changes sign every ~6 bars on average.
+        r, pk = roc15[i], peak15[i]
+        if not np.isnan(r) and not np.isnan(pk) and pk > 0:
+            strong = abs(r) >= reaccel_ratio * pk
+            if strong and kind == BEARISH and r > 0:
                 return i, cl5[i], EXIT_EARLY
-            if kind == BULLISH and r < 0:
+            if strong and kind == BULLISH and r < 0:
                 return i, cl5[i], EXIT_EARLY
     if last <= e:
         return min(e + 1, n - 1), cl5[min(e + 1, n - 1)], EXIT_EOD
@@ -345,8 +358,9 @@ def _walk_to_exit(
 
 def _roc15_lookup(
     bars15: pd.DataFrame, bars5: pd.DataFrame, params: StrategyParams
-) -> np.ndarray:
-    """Map each 5m bar to the ROC of the last 15m bar CLOSED at or before it.
+) -> tuple[np.ndarray, np.ndarray]:
+    """Map each 5m bar to the ROC and prior-peak ROC of the last 15m bar
+    CLOSED at or before it.
 
     The shift is what keeps this causal: a 5m bar may only see 15m information
     that had already closed.
@@ -359,13 +373,16 @@ def _roc15_lookup(
         decel_ratio=params.decel_ratio,
     )
     roc = b["cvd_roc"].to_numpy(dtype=float)
+    peak = b["prior_peak_roc"].to_numpy(dtype=float)
     c15 = b["close_time"].to_numpy()
     c5 = bars5["close_time"].to_numpy()
     pos = np.searchsorted(c15, c5, side="right") - 1
     out = np.full(len(c5), np.nan)
+    out_pk = np.full(len(c5), np.nan)
     ok = pos >= 0
     out[ok] = roc[pos[ok]]
-    return out
+    out_pk[ok] = peak[pos[ok]]
+    return out, out_pk
 
 
 def _empty_trades() -> pd.DataFrame:

@@ -100,6 +100,7 @@ def calibrate_thresholds(
     *,
     spearman_q: float = 25.0,
     decel_q: float = 25.0,
+    reaccel_q: float = 75.0,
 ) -> StrategyParams:
     """Derive Layer 2/3 thresholds from the TRAIN window's own distributions.
 
@@ -128,8 +129,12 @@ def calibrate_thresholds(
     ).dropna()
     dr = float(np.percentile(ratio, decel_q)) if len(ratio) else params.decel_ratio
     dr = float(min(max(dr, 1e-6), 1.0))  # keep inside the validated domain
+    ra = float(np.percentile(ratio, reaccel_q)) if len(ratio) else params.reaccel_ratio
+    ra = float(max(ra, 1e-6))
 
-    return replace(params, spearman_threshold=sp, decel_ratio=dr)
+    return replace(
+        params, spearman_threshold=sp, decel_ratio=dr, reaccel_ratio=ra
+    )
 
 
 def _infer_tf(bars: pd.DataFrame) -> str:

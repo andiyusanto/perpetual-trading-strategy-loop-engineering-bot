@@ -270,8 +270,15 @@ def _holdout_unlocked() -> tuple[bool, str]:
     if not tags:
         return False, "no 'hypothesis-v*' git tag exists"
     latest_tag = sorted(tags)[-1]
+    # ITERATION_LOG.md is deliberately exempt: it is an append-only record of
+    # what was TRIED, not part of the hypothesis specification. Freezing it
+    # would mean the audit trail could not be written without locking the
+    # holdout — the opposite of what rule 6 is protecting.
     diff = subprocess.run(
-        ["git", "diff", latest_tag, "--", "hypothesis/", "src/"],
+        [
+            "git", "diff", latest_tag, "--",
+            "hypothesis/", "src/", ":(exclude)hypothesis/ITERATION_LOG.md",
+        ],
         capture_output=True, text=True, cwd=_PROJECT_ROOT,
     ).stdout.strip()
     if diff:

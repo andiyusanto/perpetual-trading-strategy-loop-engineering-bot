@@ -1,0 +1,1238 @@
+{
+  "1_cvd_only": {
+    "layers": [
+      "swing"
+    ],
+    "summary": {
+      "n_trades": 575,
+      "breakeven_win_rate": 0.4,
+      "win_rate": 0.19130434782608696,
+      "win_rate_ci95": [
+        0.16,
+        0.22434782608695653
+      ],
+      "expectancy_r": -0.42779178843975096,
+      "expectancy_r_ci95": [
+        -0.4811550977427904,
+        -0.37189622942050454
+      ],
+      "median_r": -0.4038034515131017,
+      "profit_factor": 0.2577386021978346,
+      "total_net_pnl": -95881.01108663683,
+      "total_fees": 58917.96345734046,
+      "total_gross_pnl": -36963.04762929637,
+      "fees_as_pct_of_gross": 159.39693081650265,
+      "trade_sharpe": -0.6420072855037264,
+      "max_drawdown_r": -248.01735524312875,
+      "exit_reasons": {
+        "early_roc": 416,
+        "stop": 88,
+        "target": 39,
+        "time_stop": 31,
+        "end_of_data": 1
+      },
+      "avg_bars_held": 8.669565217391304
+    },
+    "folds": [
+      {
+        "fold": "train 2025-01-01..2025-02-28 test 2025-03-01..2025-03-31",
+        "spearman_threshold": 0.21052631578947367,
+        "decel_ratio": 0.15666878135665308,
+        "n_intents": 107,
+        "n_trades": 93,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.23655913978494625,
+        "win_rate_ci95": [
+          0.15053763440860216,
+          0.3225806451612903
+        ],
+        "expectancy_r": -0.3623827802681183,
+        "expectancy_r_ci95": [
+          -0.4979869696393835,
+          -0.22398689984703843
+        ],
+        "median_r": -0.27192269435953803,
+        "profit_factor": 0.4928236948035436,
+        "total_net_pnl": -9465.60300779603,
+        "total_fees": 7901.432185559184,
+        "total_gross_pnl": -1564.170822236847,
+        "fees_as_pct_of_gross": 505.1514881385985,
+        "trade_sharpe": -0.5209587508407898,
+        "max_drawdown_r": -35.03695531336063,
+        "exit_reasons": {
+          "early_roc": 69,
+          "stop": 16,
+          "target": 7,
+          "end_of_data": 1
+        },
+        "avg_bars_held": 6.301075268817204
+      },
+      {
+        "fold": "train 2025-02-01..2025-03-31 test 2025-04-01..2025-04-30",
+        "spearman_threshold": 0.1699248120300752,
+        "decel_ratio": 0.16497060127039462,
+        "n_intents": 101,
+        "n_trades": 89,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.2247191011235955,
+        "win_rate_ci95": [
+          0.1348314606741573,
+          0.3146067415730337
+        ],
+        "expectancy_r": -0.35345373732698876,
+        "expectancy_r_ci95": [
+          -0.4929454597405257,
+          -0.2103520507667671
+        ],
+        "median_r": -0.33177386697319583,
+        "profit_factor": 0.3176929960329873,
+        "total_net_pnl": -12890.225992139285,
+        "total_fees": 7649.642281694761,
+        "total_gross_pnl": -5240.583710444524,
+        "fees_as_pct_of_gross": 145.96927946115935,
+        "trade_sharpe": -0.5162967733044069,
+        "max_drawdown_r": -31.188649932468728,
+        "exit_reasons": {
+          "early_roc": 61,
+          "stop": 14,
+          "target": 8,
+          "time_stop": 6
+        },
+        "avg_bars_held": 8.348314606741573
+      },
+      {
+        "fold": "train 2025-03-01..2025-04-30 test 2025-05-01..2025-05-31",
+        "spearman_threshold": 0.162406015037594,
+        "decel_ratio": 0.15528951932557272,
+        "n_intents": 94,
+        "n_trades": 82,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.15853658536585366,
+        "win_rate_ci95": [
+          0.08536585365853659,
+          0.24390243902439024
+        ],
+        "expectancy_r": -0.5340593619275236,
+        "expectancy_r_ci95": [
+          -0.6726136113895422,
+          -0.38749240664231327
+        ],
+        "median_r": -0.5137065501947853,
+        "profit_factor": 0.16051366599344324,
+        "total_net_pnl": -16885.911143352747,
+        "total_fees": 8525.806412730677,
+        "total_gross_pnl": -8360.104730622072,
+        "fees_as_pct_of_gross": 101.9820527068478,
+        "trade_sharpe": -0.8051619000031857,
+        "max_drawdown_r": -42.54194151730022,
+        "exit_reasons": {
+          "early_roc": 57,
+          "stop": 17,
+          "time_stop": 4,
+          "target": 4
+        },
+        "avg_bars_held": 8.292682926829269
+      },
+      {
+        "fold": "train 2025-04-01..2025-05-31 test 2025-06-01..2025-06-30",
+        "spearman_threshold": 0.13270676691729322,
+        "decel_ratio": 0.15367705860448005,
+        "n_intents": 100,
+        "n_trades": 76,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.11842105263157894,
+        "win_rate_ci95": [
+          0.05263157894736842,
+          0.19736842105263158
+        ],
+        "expectancy_r": -0.5412984373922989,
+        "expectancy_r_ci95": [
+          -0.6798161208914109,
+          -0.39626503594235246
+        ],
+        "median_r": -0.47153829100504935,
+        "profit_factor": 0.12586330717992303,
+        "total_net_pnl": -17972.730500488316,
+        "total_fees": 8044.170084171325,
+        "total_gross_pnl": -9928.560416316992,
+        "fees_as_pct_of_gross": 81.0205079776844,
+        "trade_sharpe": -0.8567307997530785,
+        "max_drawdown_r": -40.996738041460674,
+        "exit_reasons": {
+          "early_roc": 59,
+          "stop": 12,
+          "target": 3,
+          "time_stop": 2
+        },
+        "avg_bars_held": 8.236842105263158
+      },
+      {
+        "fold": "train 2025-05-01..2025-06-30 test 2025-07-01..2025-07-31",
+        "spearman_threshold": 0.1548872180451128,
+        "decel_ratio": 0.15999566268622578,
+        "n_intents": 95,
+        "n_trades": 75,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.21333333333333335,
+        "win_rate_ci95": [
+          0.12,
+          0.30666666666666664
+        ],
+        "expectancy_r": -0.3567166443807802,
+        "expectancy_r_ci95": [
+          -0.5137944143872403,
+          -0.19817634948095558
+        ],
+        "median_r": -0.38054613571337687,
+        "profit_factor": 0.36420096312440925,
+        "total_net_pnl": -9729.445146816734,
+        "total_fees": 8637.414471049744,
+        "total_gross_pnl": -1092.0306757669896,
+        "fees_as_pct_of_gross": 790.9498023014089,
+        "trade_sharpe": -0.5074567102739856,
+        "max_drawdown_r": -25.756039804745665,
+        "exit_reasons": {
+          "early_roc": 55,
+          "target": 8,
+          "stop": 8,
+          "time_stop": 4
+        },
+        "avg_bars_held": 9.453333333333333
+      },
+      {
+        "fold": "train 2025-06-01..2025-07-31 test 2025-08-01..2025-08-31",
+        "spearman_threshold": 0.206390977443609,
+        "decel_ratio": 0.1639096574044091,
+        "n_intents": 111,
+        "n_trades": 88,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.23863636363636365,
+        "win_rate_ci95": [
+          0.14772727272727273,
+          0.32954545454545453
+        ],
+        "expectancy_r": -0.354882800737143,
+        "expectancy_r_ci95": [
+          -0.49646574937864807,
+          -0.21075546398528444
+        ],
+        "median_r": -0.41845796169573274,
+        "profit_factor": 0.27023432751295834,
+        "total_net_pnl": -14313.832136901407,
+        "total_fees": 10036.720268661931,
+        "total_gross_pnl": -4277.111868239474,
+        "fees_as_pct_of_gross": 234.66115869429441,
+        "trade_sharpe": -0.5204661370941452,
+        "max_drawdown_r": -31.26844589271208,
+        "exit_reasons": {
+          "early_roc": 61,
+          "stop": 12,
+          "target": 8,
+          "time_stop": 7
+        },
+        "avg_bars_held": 9.465909090909092
+      },
+      {
+        "fold": "train 2025-07-01..2025-08-31 test 2025-09-01..2025-09-30",
+        "spearman_threshold": 0.19285714285714287,
+        "decel_ratio": 0.16243127472699004,
+        "n_intents": 97,
+        "n_trades": 72,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.125,
+        "win_rate_ci95": [
+          0.05555555555555555,
+          0.20833333333333334
+        ],
+        "expectancy_r": -0.5264765757294587,
+        "expectancy_r_ci95": [
+          -0.6540368604297534,
+          -0.39872211778968886
+        ],
+        "median_r": -0.4734629973640533,
+        "profit_factor": 0.0875636200813163,
+        "total_net_pnl": -14623.26315914231,
+        "total_fees": 8122.777753472835,
+        "total_gross_pnl": -6500.485405669475,
+        "fees_as_pct_of_gross": 124.95648011744566,
+        "trade_sharpe": -0.9422824384566424,
+        "max_drawdown_r": -38.51702310284234,
+        "exit_reasons": {
+          "early_roc": 54,
+          "stop": 9,
+          "time_stop": 8,
+          "target": 1
+        },
+        "avg_bars_held": 11.222222222222221
+      }
+    ]
+  },
+  "2_cvd_spearman": {
+    "layers": [
+      "swing",
+      "spearman"
+    ],
+    "summary": {
+      "n_trades": 278,
+      "breakeven_win_rate": 0.4,
+      "win_rate": 0.1618705035971223,
+      "win_rate_ci95": [
+        0.1223021582733813,
+        0.20503597122302158
+      ],
+      "expectancy_r": -0.5042046880690729,
+      "expectancy_r_ci95": [
+        -0.579035482175206,
+        -0.42612109276957405
+      ],
+      "median_r": -0.4635289279918261,
+      "profit_factor": 0.20963966117397423,
+      "total_net_pnl": -50335.16229389998,
+      "total_fees": 28557.052226156873,
+      "total_gross_pnl": -21778.11006774311,
+      "fees_as_pct_of_gross": 131.12732067808983,
+      "trade_sharpe": -0.7715936976942226,
+      "max_drawdown_r": -142.2059801734744,
+      "exit_reasons": {
+        "early_roc": 203,
+        "stop": 47,
+        "target": 15,
+        "time_stop": 12,
+        "end_of_data": 1
+      },
+      "avg_bars_held": 8.47841726618705
+    },
+    "folds": [
+      {
+        "fold": "train 2025-01-01..2025-02-28 test 2025-03-01..2025-03-31",
+        "spearman_threshold": 0.21052631578947367,
+        "decel_ratio": 0.15666878135665308,
+        "n_intents": 54,
+        "n_trades": 48,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.1875,
+        "win_rate_ci95": [
+          0.08333333333333333,
+          0.2916666666666667
+        ],
+        "expectancy_r": -0.4446298673665155,
+        "expectancy_r_ci95": [
+          -0.6321413642787973,
+          -0.25231472388151704
+        ],
+        "median_r": -0.32690983548803,
+        "profit_factor": 0.40608852648062194,
+        "total_net_pnl": -6833.733596580665,
+        "total_fees": 4075.579343583501,
+        "total_gross_pnl": -2758.154252997163,
+        "fees_as_pct_of_gross": 147.76473575235144,
+        "trade_sharpe": -0.6605281536880532,
+        "max_drawdown_r": -22.677590382018366,
+        "exit_reasons": {
+          "early_roc": 34,
+          "stop": 11,
+          "target": 2,
+          "end_of_data": 1
+        },
+        "avg_bars_held": 6.541666666666667
+      },
+      {
+        "fold": "train 2025-02-01..2025-03-31 test 2025-04-01..2025-04-30",
+        "spearman_threshold": 0.1699248120300752,
+        "decel_ratio": 0.16497060127039462,
+        "n_intents": 46,
+        "n_trades": 41,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.17073170731707318,
+        "win_rate_ci95": [
+          0.07317073170731707,
+          0.2926829268292683
+        ],
+        "expectancy_r": -0.49228106377323727,
+        "expectancy_r_ci95": [
+          -0.7007487756877552,
+          -0.2707374916903008
+        ],
+        "median_r": -0.4507803255134806,
+        "profit_factor": 0.1925302355080112,
+        "total_net_pnl": -7824.94649216971,
+        "total_fees": 3550.8834594299724,
+        "total_gross_pnl": -4274.0630327397375,
+        "fees_as_pct_of_gross": 83.07981029362132,
+        "trade_sharpe": -0.6924414225227893,
+        "max_drawdown_r": -19.91479092506944,
+        "exit_reasons": {
+          "early_roc": 26,
+          "stop": 10,
+          "target": 4,
+          "time_stop": 1
+        },
+        "avg_bars_held": 7.219512195121951
+      },
+      {
+        "fold": "train 2025-03-01..2025-04-30 test 2025-05-01..2025-05-31",
+        "spearman_threshold": 0.162406015037594,
+        "decel_ratio": 0.15528951932557272,
+        "n_intents": 45,
+        "n_trades": 39,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.1282051282051282,
+        "win_rate_ci95": [
+          0.02564102564102564,
+          0.23076923076923078
+        ],
+        "expectancy_r": -0.6324137063100229,
+        "expectancy_r_ci95": [
+          -0.8364242801546277,
+          -0.41937578049816904
+        ],
+        "median_r": -0.5507016365882695,
+        "profit_factor": 0.14223683210965896,
+        "total_net_pnl": -8581.520713906451,
+        "total_fees": 4087.089420439174,
+        "total_gross_pnl": -4494.431293467278,
+        "fees_as_pct_of_gross": 90.93674268376999,
+        "trade_sharpe": -0.9383025467200452,
+        "max_drawdown_r": -24.155267557390612,
+        "exit_reasons": {
+          "early_roc": 26,
+          "stop": 9,
+          "time_stop": 2,
+          "target": 2
+        },
+        "avg_bars_held": 7.897435897435898
+      },
+      {
+        "fold": "train 2025-04-01..2025-05-31 test 2025-06-01..2025-06-30",
+        "spearman_threshold": 0.13270676691729322,
+        "decel_ratio": 0.15367705860448005,
+        "n_intents": 42,
+        "n_trades": 33,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.15151515151515152,
+        "win_rate_ci95": [
+          0.030303030303030304,
+          0.2727272727272727
+        ],
+        "expectancy_r": -0.4825416446383647,
+        "expectancy_r_ci95": [
+          -0.6898370514353497,
+          -0.2729129920353957
+        ],
+        "median_r": -0.41698167325790314,
+        "profit_factor": 0.15505420719542085,
+        "total_net_pnl": -5763.353888138758,
+        "total_fees": 3483.100425171484,
+        "total_gross_pnl": -2280.2534629672737,
+        "fees_as_pct_of_gross": 152.75058153574543,
+        "trade_sharpe": -0.7895384030842302,
+        "max_drawdown_r": -15.867491211127966,
+        "exit_reasons": {
+          "early_roc": 30,
+          "stop": 2,
+          "target": 1
+        },
+        "avg_bars_held": 10.393939393939394
+      },
+      {
+        "fold": "train 2025-05-01..2025-06-30 test 2025-07-01..2025-07-31",
+        "spearman_threshold": 0.1548872180451128,
+        "decel_ratio": 0.15999566268622578,
+        "n_intents": 44,
+        "n_trades": 37,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.1891891891891892,
+        "win_rate_ci95": [
+          0.08108108108108109,
+          0.32432432432432434
+        ],
+        "expectancy_r": -0.38868988377027963,
+        "expectancy_r_ci95": [
+          -0.6110627233853355,
+          -0.17108951956356788
+        ],
+        "median_r": -0.34580549224929524,
+        "profit_factor": 0.24777643299953261,
+        "total_net_pnl": -5137.661295229132,
+        "total_fees": 4263.499074171894,
+        "total_gross_pnl": -874.1622210572386,
+        "fees_as_pct_of_gross": 487.7240140869377,
+        "trade_sharpe": -0.5627854164052548,
+        "max_drawdown_r": -13.917555803617361,
+        "exit_reasons": {
+          "early_roc": 27,
+          "target": 4,
+          "stop": 4,
+          "time_stop": 2
+        },
+        "avg_bars_held": 8.432432432432432
+      },
+      {
+        "fold": "train 2025-06-01..2025-07-31 test 2025-08-01..2025-08-31",
+        "spearman_threshold": 0.206390977443609,
+        "decel_ratio": 0.1639096574044091,
+        "n_intents": 54,
+        "n_trades": 42,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.21428571428571427,
+        "win_rate_ci95": [
+          0.09523809523809523,
+          0.3333333333333333
+        ],
+        "expectancy_r": -0.42563451746958203,
+        "expectancy_r_ci95": [
+          -0.6190046349430134,
+          -0.22965291827057507
+        ],
+        "median_r": -0.45442635399598286,
+        "profit_factor": 0.22555759158237304,
+        "total_net_pnl": -7393.145778870553,
+        "total_fees": 4800.5875643558475,
+        "total_gross_pnl": -2592.5582145147055,
+        "fees_as_pct_of_gross": 185.16797568823185,
+        "trade_sharpe": -0.6579122991563079,
+        "max_drawdown_r": -18.068440584632825,
+        "exit_reasons": {
+          "early_roc": 30,
+          "stop": 6,
+          "time_stop": 4,
+          "target": 2
+        },
+        "avg_bars_held": 9.666666666666666
+      },
+      {
+        "fold": "train 2025-07-01..2025-08-31 test 2025-09-01..2025-09-30",
+        "spearman_threshold": 0.19285714285714287,
+        "decel_ratio": 0.16243127472699004,
+        "n_intents": 56,
+        "n_trades": 38,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.07894736842105263,
+        "win_rate_ci95": [
+          0.0,
+          0.15789473684210525
+        ],
+        "expectancy_r": -0.6788674153296601,
+        "expectancy_r_ci95": [
+          -0.844147490267462,
+          -0.5138285067272308
+        ],
+        "median_r": -0.6824798586162202,
+        "profit_factor": 0.05239805961360505,
+        "total_net_pnl": -8800.800529004713,
+        "total_fees": 4296.312939005,
+        "total_gross_pnl": -4504.487589999713,
+        "fees_as_pct_of_gross": 95.3785053941124,
+        "trade_sharpe": -1.27588117423096,
+        "max_drawdown_r": -26.407671432848407,
+        "exit_reasons": {
+          "early_roc": 30,
+          "stop": 5,
+          "time_stop": 3
+        },
+        "avg_bars_held": 9.947368421052632
+      }
+    ]
+  },
+  "3_cvd_roc": {
+    "layers": [
+      "swing",
+      "roc"
+    ],
+    "summary": {
+      "n_trades": 152,
+      "breakeven_win_rate": 0.4,
+      "win_rate": 0.13815789473684212,
+      "win_rate_ci95": [
+        0.08552631578947369,
+        0.19078947368421054
+      ],
+      "expectancy_r": -0.46472640186392056,
+      "expectancy_r_ci95": [
+        -0.5552240496928937,
+        -0.37265425183006234
+      ],
+      "median_r": -0.4349459630464101,
+      "profit_factor": 0.17815172246197064,
+      "total_net_pnl": -25300.789476993705,
+      "total_fees": 15388.682273809685,
+      "total_gross_pnl": -9912.107203184016,
+      "fees_as_pct_of_gross": 155.2513704539682,
+      "trade_sharpe": -0.8237063680697533,
+      "max_drawdown_r": -69.3636346688529,
+      "exit_reasons": {
+        "early_roc": 125,
+        "stop": 17,
+        "target": 6,
+        "time_stop": 4
+      },
+      "avg_bars_held": 5.723684210526316
+    },
+    "folds": [
+      {
+        "fold": "train 2025-01-01..2025-02-28 test 2025-03-01..2025-03-31",
+        "spearman_threshold": 0.21052631578947367,
+        "decel_ratio": 0.15666878135665308,
+        "n_intents": 31,
+        "n_trades": 28,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.25,
+        "win_rate_ci95": [
+          0.10714285714285714,
+          0.42857142857142855
+        ],
+        "expectancy_r": -0.3170746315022894,
+        "expectancy_r_ci95": [
+          -0.5153012217779147,
+          -0.12685343445854416
+        ],
+        "median_r": -0.19024541316710922,
+        "profit_factor": 0.4026244432014327,
+        "total_net_pnl": -2788.277574659967,
+        "total_fees": 2372.172849382639,
+        "total_gross_pnl": -416.1047252773278,
+        "fees_as_pct_of_gross": 570.0903415123729,
+        "trade_sharpe": -0.5799528188767067,
+        "max_drawdown_r": -7.603311267601058,
+        "exit_reasons": {
+          "early_roc": 24,
+          "stop": 3,
+          "target": 1
+        },
+        "avg_bars_held": 6.035714285714286
+      },
+      {
+        "fold": "train 2025-02-01..2025-03-31 test 2025-04-01..2025-04-30",
+        "spearman_threshold": 0.1699248120300752,
+        "decel_ratio": 0.16497060127039462,
+        "n_intents": 32,
+        "n_trades": 27,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.14814814814814814,
+        "win_rate_ci95": [
+          0.037037037037037035,
+          0.2962962962962963
+        ],
+        "expectancy_r": -0.35927074405533027,
+        "expectancy_r_ci95": [
+          -0.5648864511079126,
+          -0.13746784846214233
+        ],
+        "median_r": -0.3132901746370554,
+        "profit_factor": 0.1490298869557654,
+        "total_net_pnl": -4184.061306609584,
+        "total_fees": 2312.4978126097276,
+        "total_gross_pnl": -1871.5634939998563,
+        "fees_as_pct_of_gross": 123.55967724437274,
+        "trade_sharpe": -0.6245936858648657,
+        "max_drawdown_r": -10.083918721791338,
+        "exit_reasons": {
+          "early_roc": 22,
+          "target": 2,
+          "stop": 2,
+          "time_stop": 1
+        },
+        "avg_bars_held": 3.814814814814815
+      },
+      {
+        "fold": "train 2025-03-01..2025-04-30 test 2025-05-01..2025-05-31",
+        "spearman_threshold": 0.162406015037594,
+        "decel_ratio": 0.15528951932557272,
+        "n_intents": 28,
+        "n_trades": 21,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.047619047619047616,
+        "win_rate_ci95": [
+          0.0,
+          0.14285714285714285
+        ],
+        "expectancy_r": -0.5400706033448258,
+        "expectancy_r_ci95": [
+          -0.7710274859718643,
+          -0.3016460716609756
+        ],
+        "median_r": -0.45756762273185536,
+        "profit_factor": 0.16108334956370426,
+        "total_net_pnl": -3625.212660339856,
+        "total_fees": 2181.0079203400005,
+        "total_gross_pnl": -1444.2047399998555,
+        "fees_as_pct_of_gross": 151.017917330767,
+        "trade_sharpe": -0.9504284343684257,
+        "max_drawdown_r": -10.083085871104085,
+        "exit_reasons": {
+          "early_roc": 16,
+          "stop": 3,
+          "time_stop": 2
+        },
+        "avg_bars_held": 7.0476190476190474
+      },
+      {
+        "fold": "train 2025-04-01..2025-05-31 test 2025-06-01..2025-06-30",
+        "spearman_threshold": 0.13270676691729322,
+        "decel_ratio": 0.15367705860448005,
+        "n_intents": 30,
+        "n_trades": 20,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.05,
+        "win_rate_ci95": [
+          0.0,
+          0.15
+        ],
+        "expectancy_r": -0.6166733523245262,
+        "expectancy_r_ci95": [
+          -0.8248872825957293,
+          -0.4225812342841913
+        ],
+        "median_r": -0.44826400647307363,
+        "profit_factor": 0.01743918927414307,
+        "total_net_pnl": -4535.587451734803,
+        "total_fees": 2119.179721735,
+        "total_gross_pnl": -2416.4077299998025,
+        "fees_as_pct_of_gross": 87.69959206078079,
+        "trade_sharpe": -1.309778662220765,
+        "max_drawdown_r": -12.419027184906502,
+        "exit_reasons": {
+          "early_roc": 17,
+          "stop": 3
+        },
+        "avg_bars_held": 6.45
+      },
+      {
+        "fold": "train 2025-05-01..2025-06-30 test 2025-07-01..2025-07-31",
+        "spearman_threshold": 0.1548872180451128,
+        "decel_ratio": 0.15999566268622578,
+        "n_intents": 28,
+        "n_trades": 20,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.15,
+        "win_rate_ci95": [
+          0.0,
+          0.3
+        ],
+        "expectancy_r": -0.4534996590972445,
+        "expectancy_r_ci95": [
+          -0.7521768902243068,
+          -0.13394486840566253
+        ],
+        "median_r": -0.5050434326949685,
+        "profit_factor": 0.34731225210759187,
+        "total_net_pnl": -2736.3961495570366,
+        "total_fees": 2314.009461009639,
+        "total_gross_pnl": -422.3866885473981,
+        "fees_as_pct_of_gross": 547.8414741164298,
+        "trade_sharpe": -0.6316150763663184,
+        "max_drawdown_r": -7.60432925729628,
+        "exit_reasons": {
+          "early_roc": 15,
+          "stop": 3,
+          "target": 2
+        },
+        "avg_bars_held": 6.0
+      },
+      {
+        "fold": "train 2025-06-01..2025-07-31 test 2025-08-01..2025-08-31",
+        "spearman_threshold": 0.206390977443609,
+        "decel_ratio": 0.1639096574044091,
+        "n_intents": 23,
+        "n_trades": 19,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.15789473684210525,
+        "win_rate_ci95": [
+          0.0,
+          0.3157894736842105
+        ],
+        "expectancy_r": -0.5276400855815785,
+        "expectancy_r_ci95": [
+          -0.7780034341545822,
+          -0.2606241469376366
+        ],
+        "median_r": -0.565929077401759,
+        "profit_factor": 0.09128364098974193,
+        "total_net_pnl": -4322.775527567571,
+        "total_fees": 2174.20275220768,
+        "total_gross_pnl": -2148.5727753598912,
+        "fees_as_pct_of_gross": 101.1928838129998,
+        "trade_sharpe": -0.8921614129576799,
+        "max_drawdown_r": -9.25024223997946,
+        "exit_reasons": {
+          "early_roc": 14,
+          "stop": 3,
+          "target": 1,
+          "time_stop": 1
+        },
+        "avg_bars_held": 6.157894736842105
+      },
+      {
+        "fold": "train 2025-07-01..2025-08-31 test 2025-09-01..2025-09-30",
+        "spearman_threshold": 0.19285714285714287,
+        "decel_ratio": 0.16243127472699004,
+        "n_intents": 26,
+        "n_trades": 17,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.11764705882352941,
+        "win_rate_ci95": [
+          0.0,
+          0.29411764705882354
+        ],
+        "expectancy_r": -0.5464652227665385,
+        "expectancy_r_ci95": [
+          -0.7346169576600157,
+          -0.34694835203124264
+        ],
+        "median_r": -0.5764176539617981,
+        "profit_factor": 0.06200600067068615,
+        "total_net_pnl": -3108.4788065248845,
+        "total_fees": 1915.6117565250001,
+        "total_gross_pnl": -1192.8670499998843,
+        "fees_as_pct_of_gross": 160.58887338074982,
+        "trade_sharpe": -1.2730445912353088,
+        "max_drawdown_r": -8.912964369667378,
+        "exit_reasons": {
+          "early_roc": 17
+        },
+        "avg_bars_held": 4.9411764705882355
+      }
+    ]
+  },
+  "4_cvd_funding": {
+    "layers": [
+      "swing",
+      "funding"
+    ],
+    "summary": {
+      "n_trades": 65,
+      "breakeven_win_rate": 0.4,
+      "win_rate": 0.2153846153846154,
+      "win_rate_ci95": [
+        0.12307692307692308,
+        0.3230769230769231
+      ],
+      "expectancy_r": -0.37638788115776534,
+      "expectancy_r_ci95": [
+        -0.5505874042174769,
+        -0.20116332751316943
+      ],
+      "median_r": -0.3827104695144118,
+      "profit_factor": 0.5323292849803686,
+      "total_net_pnl": -6287.777134030591,
+      "total_fees": 6877.8977559460445,
+      "total_gross_pnl": 590.1206219154556,
+      "fees_as_pct_of_gross": 1165.5071015178683,
+      "trade_sharpe": -0.5187569846668977,
+      "max_drawdown_r": -25.800569023680374,
+      "exit_reasons": {
+        "early_roc": 43,
+        "stop": 9,
+        "time_stop": 7,
+        "target": 6
+      },
+      "avg_bars_held": 11.107692307692307
+    },
+    "folds": [
+      {
+        "fold": "train 2025-01-01..2025-02-28 test 2025-03-01..2025-03-31",
+        "spearman_threshold": 0.21052631578947367,
+        "decel_ratio": 0.15666878135665308,
+        "n_intents": 13,
+        "n_trades": 11,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.2727272727272727,
+        "win_rate_ci95": [
+          0.0,
+          0.5454545454545454
+        ],
+        "expectancy_r": -0.14009021332062885,
+        "expectancy_r_ci95": [
+          -0.5885480881872359,
+          0.36943507757315014
+        ],
+        "median_r": -0.3507327431706343,
+        "profit_factor": 2.276604017345444,
+        "total_net_pnl": 2121.562995799064,
+        "total_fees": 946.7687512035012,
+        "total_gross_pnl": 3068.331747002565,
+        "fees_as_pct_of_gross": 30.85614038079142,
+        "trade_sharpe": -0.16361362587147135,
+        "max_drawdown_r": -2.87634909495255,
+        "exit_reasons": {
+          "early_roc": 8,
+          "target": 2,
+          "stop": 1
+        },
+        "avg_bars_held": 6.636363636363637
+      },
+      {
+        "fold": "train 2025-02-01..2025-03-31 test 2025-04-01..2025-04-30",
+        "spearman_threshold": 0.1699248120300752,
+        "decel_ratio": 0.16497060127039462,
+        "n_intents": 6,
+        "n_trades": 6,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.0,
+        "win_rate_ci95": [
+          0.0,
+          0.0
+        ],
+        "expectancy_r": -0.5963675056291791,
+        "expectancy_r_ci95": [
+          -0.7871257169620164,
+          -0.43480602644413663
+        ],
+        "median_r": -0.5007221557600317,
+        "profit_factor": 0.0,
+        "total_net_pnl": -1178.9204442949504,
+        "total_fees": 552.262794295,
+        "total_gross_pnl": -626.6576499999501,
+        "fees_as_pct_of_gross": 88.12830965919653,
+        "trade_sharpe": -2.4449644266269344,
+        "max_drawdown_r": -2.798760709835961,
+        "exit_reasons": {
+          "early_roc": 5,
+          "time_stop": 1
+        },
+        "avg_bars_held": 10.0
+      },
+      {
+        "fold": "train 2025-03-01..2025-04-30 test 2025-05-01..2025-05-31",
+        "spearman_threshold": 0.162406015037594,
+        "decel_ratio": 0.15528951932557272,
+        "n_intents": 18,
+        "n_trades": 14,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.21428571428571427,
+        "win_rate_ci95": [
+          0.0,
+          0.42857142857142855
+        ],
+        "expectancy_r": -0.6127069540277031,
+        "expectancy_r_ci95": [
+          -0.9783102597762074,
+          -0.2243692864111996
+        ],
+        "median_r": -0.5171896402789019,
+        "profit_factor": 0.07452129389164398,
+        "total_net_pnl": -3761.360999400353,
+        "total_fees": 1467.5988134929537,
+        "total_gross_pnl": -2293.762185907399,
+        "fees_as_pct_of_gross": 63.98216966474143,
+        "trade_sharpe": -0.8212801951316182,
+        "max_drawdown_r": -8.195186886873431,
+        "exit_reasons": {
+          "early_roc": 7,
+          "stop": 5,
+          "time_stop": 1,
+          "target": 1
+        },
+        "avg_bars_held": 11.071428571428571
+      },
+      {
+        "fold": "train 2025-04-01..2025-05-31 test 2025-06-01..2025-06-30",
+        "spearman_threshold": 0.13270676691729322,
+        "decel_ratio": 0.15367705860448005,
+        "n_intents": 6,
+        "n_trades": 5,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.2,
+        "win_rate_ci95": [
+          0.0,
+          0.6
+        ],
+        "expectancy_r": -0.3862023280636774,
+        "expectancy_r_ci95": [
+          -0.8132911754029557,
+          -0.003058943080076304
+        ],
+        "median_r": -0.2695692076197678,
+        "profit_factor": 0.061021841750740755,
+        "total_net_pnl": -1316.1835895999714,
+        "total_fees": 532.6147696,
+        "total_gross_pnl": -783.5688199999713,
+        "fees_as_pct_of_gross": 67.97294073033937,
+        "trade_sharpe": -0.7228281349272028,
+        "max_drawdown_r": -0.758865727017922,
+        "exit_reasons": {
+          "early_roc": 5
+        },
+        "avg_bars_held": 11.4
+      },
+      {
+        "fold": "train 2025-05-01..2025-06-30 test 2025-07-01..2025-07-31",
+        "spearman_threshold": 0.1548872180451128,
+        "decel_ratio": 0.15999566268622578,
+        "n_intents": 28,
+        "n_trades": 20,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.3,
+        "win_rate_ci95": [
+          0.1,
+          0.5
+        ],
+        "expectancy_r": -0.20286806414703254,
+        "expectancy_r_ci95": [
+          -0.5434714822328623,
+          0.1362751003391949
+        ],
+        "median_r": -0.2832393519661296,
+        "profit_factor": 0.8297186759739669,
+        "total_net_pnl": -586.2469473344511,
+        "total_fees": 2354.5100381545903,
+        "total_gross_pnl": 1768.263090820139,
+        "fees_as_pct_of_gross": 133.1538304666272,
+        "trade_sharpe": -0.2533413243952322,
+        "max_drawdown_r": -3.946436292794584,
+        "exit_reasons": {
+          "early_roc": 12,
+          "time_stop": 3,
+          "target": 3,
+          "stop": 2
+        },
+        "avg_bars_held": 12.9
+      },
+      {
+        "fold": "train 2025-06-01..2025-07-31 test 2025-08-01..2025-08-31",
+        "spearman_threshold": 0.206390977443609,
+        "decel_ratio": 0.1639096574044091,
+        "n_intents": 3,
+        "n_trades": 3,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.3333333333333333,
+        "win_rate_ci95": [
+          0.0,
+          1.0
+        ],
+        "expectancy_r": -0.5609130523353657,
+        "expectancy_r_ci95": [
+          -1.7277186441504153,
+          0.42190525265064177
+        ],
+        "median_r": -0.3769257655063237,
+        "profit_factor": 0.24351495468342155,
+        "total_net_pnl": -399.76653878997774,
+        "total_fees": 338.22907879,
+        "total_gross_pnl": -61.53745999997773,
+        "fees_as_pct_of_gross": 549.6311982817009,
+        "trade_sharpe": -0.5162290754882725,
+        "max_drawdown_r": -1.7277186441504153,
+        "exit_reasons": {
+          "early_roc": 2,
+          "stop": 1
+        },
+        "avg_bars_held": 1.0
+      },
+      {
+        "fold": "train 2025-07-01..2025-08-31 test 2025-09-01..2025-09-30",
+        "spearman_threshold": 0.19285714285714287,
+        "decel_ratio": 0.16243127472699004,
+        "n_intents": 8,
+        "n_trades": 6,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.0,
+        "win_rate_ci95": [
+          0.0,
+          0.0
+        ],
+        "expectancy_r": -0.5161675763832954,
+        "expectancy_r_ci95": [
+          -0.7793706167618901,
+          -0.26618471817881256
+        ],
+        "median_r": -0.45997189745055567,
+        "profit_factor": 0.0,
+        "total_net_pnl": -1166.8616104099506,
+        "total_fees": 685.9135104100001,
+        "total_gross_pnl": -480.9480999999505,
+        "fees_as_pct_of_gross": 142.6169498143502,
+        "trade_sharpe": -1.4511317502141314,
+        "max_drawdown_r": -3.0526798667601693,
+        "exit_reasons": {
+          "early_roc": 4,
+          "time_stop": 2
+        },
+        "avg_bars_held": 19.333333333333332
+      }
+    ]
+  },
+  "5_full_combined": {
+    "layers": [
+      "swing",
+      "spearman",
+      "roc",
+      "funding"
+    ],
+    "summary": {
+      "n_trades": 7,
+      "breakeven_win_rate": 0.4,
+      "win_rate": 0.14285714285714285,
+      "win_rate_ci95": [
+        0.0,
+        0.42857142857142855
+      ],
+      "expectancy_r": -0.8838890489280252,
+      "expectancy_r_ci95": [
+        -1.3482999789799595,
+        -0.38892651387149507
+      ],
+      "median_r": -1.0277694711021015,
+      "profit_factor": 0.14538264656147953,
+      "total_net_pnl": -1479.6566930999493,
+      "total_fees": 703.5354531,
+      "total_gross_pnl": -776.1212399999495,
+      "fees_as_pct_of_gross": 90.6476226704021,
+      "trade_sharpe": -1.2227075862320176,
+      "max_drawdown_r": -5.205512512110679,
+      "exit_reasons": {
+        "early_roc": 4,
+        "stop": 3
+      },
+      "avg_bars_held": 8.0
+    },
+    "folds": [
+      {
+        "fold": "train 2025-01-01..2025-02-28 test 2025-03-01..2025-03-31",
+        "spearman_threshold": 0.21052631578947367,
+        "decel_ratio": 0.15666878135665308,
+        "n_intents": 2,
+        "n_trades": 2,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.0,
+        "win_rate_ci95": [
+          0.0,
+          0.0
+        ],
+        "expectancy_r": -1.1512739427825727,
+        "expectancy_r_ci95": [
+          -1.274778414463044,
+          -1.0277694711021015
+        ],
+        "median_r": -1.1512739427825727,
+        "profit_factor": 0.0,
+        "total_net_pnl": -688.3956623249886,
+        "total_fees": 170.559812325,
+        "total_gross_pnl": -517.8358499999886,
+        "fees_as_pct_of_gross": 32.93704217755564,
+        "trade_sharpe": -6.591450502708016,
+        "max_drawdown_r": -1.0277694711021013,
+        "exit_reasons": {
+          "stop": 1,
+          "early_roc": 1
+        },
+        "avg_bars_held": 6.5
+      },
+      {
+        "fold": "train 2025-02-01..2025-03-31 test 2025-04-01..2025-04-30",
+        "spearman_threshold": 0.1699248120300752,
+        "decel_ratio": 0.16497060127039462,
+        "n_intents": 2,
+        "n_trades": 2,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.0,
+        "win_rate_ci95": [
+          0.0,
+          0.0
+        ],
+        "expectancy_r": -0.44222662075578506,
+        "expectancy_r_ci95": [
+          -0.4507803255134806,
+          -0.43367291599808955
+        ],
+        "median_r": -0.44222662075578506,
+        "profit_factor": 0.0,
+        "total_net_pnl": -283.1914374649727,
+        "total_fees": 187.557147465,
+        "total_gross_pnl": -95.63428999997268,
+        "fees_as_pct_of_gross": 196.119140388927,
+        "trade_sharpe": -36.55742759607164,
+        "max_drawdown_r": -0.4507803255134806,
+        "exit_reasons": {
+          "early_roc": 2
+        },
+        "avg_bars_held": 1.0
+      },
+      {
+        "fold": "train 2025-03-01..2025-04-30 test 2025-05-01..2025-05-31",
+        "spearman_threshold": 0.162406015037594,
+        "decel_ratio": 0.15528951932557272,
+        "n_intents": 2,
+        "n_trades": 1,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.0,
+        "win_rate_ci95": [
+          0.0,
+          0.0
+        ],
+        "expectancy_r": -1.5397142822324172,
+        "expectancy_r_ci95": [
+          -1.5397142822324172,
+          -1.5397142822324172
+        ],
+        "median_r": -1.5397142822324172,
+        "profit_factor": 0.0,
+        "total_net_pnl": -406.2003546499941,
+        "total_fees": 109.50023465000001,
+        "total_gross_pnl": -296.70011999999406,
+        "fees_as_pct_of_gross": 36.906029781855906,
+        "trade_sharpe": null,
+        "max_drawdown_r": 0.0,
+        "exit_reasons": {
+          "stop": 1
+        },
+        "avg_bars_held": 8.0
+      },
+      {
+        "fold": "train 2025-04-01..2025-05-31 test 2025-06-01..2025-06-30",
+        "spearman_threshold": 0.13270676691729322,
+        "decel_ratio": 0.15367705860448005,
+        "n_intents": 1,
+        "n_trades": 0,
+        "breakeven_win_rate": 0.4
+      },
+      {
+        "fold": "train 2025-05-01..2025-06-30 test 2025-07-01..2025-07-31",
+        "spearman_threshold": 0.1548872180451128,
+        "decel_ratio": 0.15999566268622578,
+        "n_intents": 3,
+        "n_trades": 2,
+        "breakeven_win_rate": 0.4,
+        "win_rate": 0.5,
+        "win_rate_ci95": [
+          0.0,
+          1.0
+        ],
+        "expectancy_r": -0.7302539665935219,
+        "expectancy_r_ci95": [
+          -1.7535755172645897,
+          0.29306758407754596
+        ],
+        "median_r": -0.7302539665935219,
+        "profit_factor": 0.7118919863675116,
+        "total_net_pnl": -101.86923865999415,
+        "total_fees": 235.91825866000002,
+        "total_gross_pnl": 134.04902000000584,
+        "fees_as_pct_of_gross": 175.9940196951755,
+        "trade_sharpe": -0.5045994892104377,
+        "max_drawdown_r": 0.0,
+        "exit_reasons": {
+          "stop": 1,
+          "early_roc": 1
+        },
+        "avg_bars_held": 16.5
+      },
+      {
+        "fold": "train 2025-06-01..2025-07-31 test 2025-08-01..2025-08-31",
+        "spearman_threshold": 0.206390977443609,
+        "decel_ratio": 0.1639096574044091,
+        "n_intents": 0,
+        "n_trades": 0,
+        "breakeven_win_rate": 0.4
+      },
+      {
+        "fold": "train 2025-07-01..2025-08-31 test 2025-09-01..2025-09-30",
+        "spearman_threshold": 0.19285714285714287,
+        "decel_ratio": 0.16243127472699004,
+        "n_intents": 0,
+        "n_trades": 0,
+        "breakeven_win_rate": 0.4
+      }
+    ]
+  }
+}
