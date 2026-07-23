@@ -20,6 +20,14 @@ choices, and in the last cycle they *generated* the result — the exit rule cau
 72% of outcomes and the R:R choice made the breakeven look like 40% when it was
 really ~57%. Removing them isolates the signal itself.
 
+POWER — WHY A NULL IS NOT AUTOMATICALLY A REJECTION
+---------------------------------------------------
+A screen that reports "no edge" from a test too small to see one is worse than
+no screen at all: it kills good candidates. So every horizon also reports its
+**minimum detectable effect** (MDE = 2.80 x SE, i.e. 80% power at alpha=0.05).
+If MDE exceeds the cost bar, the test could not have resolved a tradeable edge
+even if it existed, and the verdict is INCONCLUSIVE — never "no edge".
+
 WHAT PASSING DOES *NOT* MEAN
 ----------------------------
 Necessary, not sufficient. A positive screen says a signal has a pulse; it says
@@ -203,6 +211,7 @@ def screen_signal(
     report["signals_per_day"] = round(len(signal) / max(days, 1), 2)
 
     any_tradeable = False
+    any_powered = False
     for h in horizons_min:
         r = forward_returns(bars, signal.times_ms, signal.direction, h)
         v = r[~np.isnan(r)]
@@ -219,9 +228,16 @@ def screen_signal(
         # The decisive test: does the edge clear the cost of taking it?
         clears = (lo > cost_bps)
         any_tradeable |= bool(clears)
+        # Could this test have SEEN a cost-sized edge? 2.80 = z(0.975)+z(0.80).
+        mde = 2.80 * se
+        powered = bool(mde <= cost_bps)
+        any_powered |= powered
         report["horizons"][f"{h}m"] = {
             "n": int(v.size),
             "mean_bps": round(mean, 3),
+            "se_bps": round(se, 3),
+            "mde_bps": round(float(mde), 3),
+            "powered": powered,
             "t_stat": round(float(t), 3),
             "ci95_bps": [round(lo, 3), round(hi, 3)],
             "frac_positive": round(float((v > 0).mean()), 4),
@@ -244,7 +260,14 @@ def screen_signal(
                         "mean_bps": round(float(vv.mean()), 3) if vv.size else None})
         report["subperiods"] = {"horizon": f"{h0}m", "buckets": sub}
 
-    report["verdict"] = "TRADEABLE EDGE" if any_tradeable else "NO TRADEABLE EDGE"
+    if any_tradeable:
+        report["verdict"] = "TRADEABLE EDGE"
+    elif not any_powered:
+        # Not a rejection. The test simply could not resolve a cost-sized effect.
+        report["verdict"] = "INCONCLUSIVE (UNDERPOWERED)"
+    else:
+        report["verdict"] = "NO TRADEABLE EDGE"
+    report["any_horizon_powered"] = any_powered
     if log:
         _append_log(report)
     return report
@@ -271,13 +294,14 @@ def format_report(rep: dict) -> str:
         f"({rep.get('signals_per_day','?')}/day)",
         f"cost bar : {rep['cost_bps']} bps round trip",
         "",
-        f"{'horizon':>8} {'mean bps':>10} {'t':>7} {'CI95 bps':>20} {'>0':>7} {'perm p':>8} {'clears cost':>12}",
+        f"{'horizon':>8} {'mean bps':>10} {'t':>7} {'CI95 bps':>20} {'MDE':>8} {'powered':>8} {'perm p':>8} {'clears':>7}",
     ]
     for h, d in rep.get("horizons", {}).items():
         ci = f"[{d['ci95_bps'][0]:.2f}, {d['ci95_bps'][1]:.2f}]"
         lines.append(
             f"{h:>8} {d['mean_bps']:>10.2f} {d['t_stat']:>7.2f} {ci:>20} "
-            f"{d['frac_positive']:>7.3f} {d['perm_p']:>8.3f} {str(d['clears_cost']):>12}"
+            f"{d.get('mde_bps', float('nan')):>8.1f} {str(d.get('powered')):>8} "
+            f"{d['perm_p']:>8.3f} {str(d['clears_cost']):>7}"
         )
     if "subperiods" in rep:
         b = ", ".join(str(x["mean_bps"]) for x in rep["subperiods"]["buckets"])

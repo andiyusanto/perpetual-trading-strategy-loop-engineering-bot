@@ -170,3 +170,30 @@ def test_empty_signal_set_is_handled():
     sig = SignalSet("none", np.array([], dtype="int64"), np.array([], dtype=int))
     rep = screen_signal(bars, sig, log=False)
     assert rep["verdict"] == "NO SIGNALS"
+
+
+def test_underpowered_null_is_inconclusive_not_a_rejection():
+    """A tiny sample must NOT be reported as 'no edge' — it cannot see one."""
+    n = 4000
+    bars = _bars(_random_walk(n, seed=21, sigma=25.0))  # noisy -> wide SE
+    rng = np.random.default_rng(22)
+    idx = np.sort(rng.choice(np.arange(50, n - 400), size=12, replace=False))
+    sig = SignalSet("tiny_sample", bars.close_time.to_numpy()[idx],
+                    rng.choice([-1, 1], size=12))
+    rep = screen_signal(bars, sig, horizons_min=(240,), n_perm=30, log=False)
+    assert rep["verdict"] == "INCONCLUSIVE (UNDERPOWERED)"
+    assert rep["any_horizon_powered"] is False
+    assert rep["horizons"]["240m"]["mde_bps"] > DEFAULT_COST_BPS
+
+
+def test_well_powered_null_is_a_real_rejection():
+    """With enough samples and low noise, a null IS a rejection."""
+    n = 20000
+    bars = _bars(_random_walk(n, seed=23, sigma=1.0))
+    rng = np.random.default_rng(24)
+    idx = np.sort(rng.choice(np.arange(50, n - 100), size=3000, replace=False))
+    sig = SignalSet("powered_noise", bars.close_time.to_numpy()[idx],
+                    rng.choice([-1, 1], size=3000))
+    rep = screen_signal(bars, sig, horizons_min=(60,), n_perm=30, log=False)
+    assert rep["horizons"]["60m"]["powered"] is True
+    assert rep["verdict"] == "NO TRADEABLE EDGE"
