@@ -1,6 +1,7 @@
 # KILL CRITERIA — Day Trade: CVD Divergence + Funding Rate Filter
 
-**Version**: v1 — locked alongside `HYPOTHESIS.md` v1. Commit + tag before
+**Version**: v1 — LOCKED 2026-07-23 alongside `HYPOTHESIS.md` v1 as git tag
+`hypothesis-v1`, before any backtest was run. Committed + tagged before
 running any backtest. Do not edit after locking; add a new dated version if
 criteria genuinely need to change (and say why).
 

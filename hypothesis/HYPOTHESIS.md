@@ -1,8 +1,13 @@
 # HYPOTHESIS — Day Trade: CVD Divergence + Funding Rate Filter
 
 **Version**: v1
-**Status**: DRAFT — lock this (commit + git tag `hypothesis-v1`) before any
-backtest is run. Do not edit in place after locking; add a new version below.
+**Status**: **LOCKED** 2026-07-23 as git tag `hypothesis-v1`, before any
+backtest was run. Do not edit in place after locking; add a new dated version
+below instead.
+
+Everything above the lock — including the CVD reconstruction spec and the
+threshold calibration rule — was written while no backtest results existed.
+Changing any of it now means a new hypothesis version, not an edit.
 
 ---
 
@@ -68,6 +73,31 @@ to a tested claim.*
    window is always a fixed N × timeframe horizon. On illiquid symbols an
    unfilled gap would silently stretch the window; the implementation raises
    rather than rolling over a gapped series.
+
+## Threshold calibration rule
+
+*Added 2026-07-23, before any backtest was run.*
+
+Layers 2 and 3 say their thresholds are "to be calibrated from the research-set
+distribution". That calibration is defined here so it cannot be chosen after
+seeing results:
+
+- **Per fold, on the TRAINING window only.** Walk-forward cuts the research set
+  into rolling folds (2-month train / 1-month test, sliding 1 month). Each
+  fold's thresholds are derived from its training window and then applied
+  unchanged to its test window. Calibrating on data a fold is scored on would
+  be circular.
+- **Layer 2**: `spearman_threshold` := the 25th percentile of the rolling
+  Spearman correlation observed in the training window ("breakdown" = the
+  bottom quartile of how coupled price and CVD normally are for that
+  instrument).
+- **Layer 3**: `decel_ratio` := the 25th percentile of
+  `|CVD ROC| / prior-peak |CVD ROC|` in the training window.
+- Both are **relative to the instrument's own behaviour**, deliberately — an
+  absolute 0.3 means different things on BTC than on a newly listed pair.
+- The *rule* is what counts against the multiple-testing budget, not each
+  resulting number. Changing the percentile, the statistic, or the window is a
+  new combination and must be logged in `ITERATION_LOG.md`.
 
 ## Signal layers
 
