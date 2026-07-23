@@ -176,9 +176,12 @@ These exist to prevent data-snooping and self-delusion. Follow them exactly.
 - [x] Lock `hypothesis/HYPOTHESIS.md` + `hypothesis/KILL_CRITERIA.md`, commit + tag
       (tags hypothesis-v1, then hypothesis-v1.1 after the early-exit defect fix)
 - [x] Backtest on research set (walk-forward)
-      (BTCUSDT, 7 folds, 5 attribution configs — ALL FAIL the kill criteria:
-       best 32.3% WR vs 40% breakeven, PF 0.07-0.56, layers subtract value.
-       See hypothesis/ITERATION_LOG.md. Budget used 5/8.)
+      (BTCUSDT, 7 folds, 5 attribution configs — all fail. Best 32.3% WR,
+       expectancy -0.413R. NB: the 40% breakeven printed by the run is
+       pre-cost and does NOT apply; measured random baseline is 27.2%/-0.388R
+       and cost-adjusted breakeven is ~57%. Every layer is zero-information
+       (zero-cost expectancy -0.004 to +0.020 R). See ITERATION_LOG.md for
+       claims withdrawn after review. Budget used 5/8.)
 - [ ] Validate once/twice on validation set  <-- NOT opened: nothing passed research
 - [x] Adversarial review pass (separate from the building pass)
       (independent pass, 2026-07-23: verdict SOUND — mechanism carries zero
