@@ -197,3 +197,18 @@ def test_well_powered_null_is_a_real_rejection():
     rep = screen_signal(bars, sig, horizons_min=(60,), n_perm=30, log=False)
     assert rep["horizons"]["60m"]["powered"] is True
     assert rep["verdict"] == "NO TRADEABLE EDGE"
+
+
+def test_power_uses_cluster_aware_se_not_iid():
+    """Clustered signals must not be credited with iid precision."""
+    n = 8000
+    bars = _bars(_random_walk(n, seed=31, sigma=6.0))
+    # 400 signals in tight clumps -> raw n large, effective n small
+    rng = np.random.default_rng(32)
+    starts = rng.choice(np.arange(100, n - 400), size=20, replace=False)
+    idx = np.sort(np.concatenate([np.arange(s, s + 20) for s in starts]))
+    sig = SignalSet("clumped", bars.close_time.to_numpy()[idx],
+                    np.ones(len(idx), int))
+    rep = screen_signal(bars, sig, horizons_min=(240,), n_perm=30, log=False)
+    h = rep["horizons"]["240m"]
+    assert h["se_bps"] >= h["se_iid_bps"], "clustered SE must exceed iid SE"

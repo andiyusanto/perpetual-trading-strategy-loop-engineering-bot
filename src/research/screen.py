@@ -150,6 +150,17 @@ def _block_bootstrap_ci(
     return float(lo), float(hi)
 
 
+def _se_from_ci(lo: float, hi: float, *, fallback: float) -> float:
+    """Standard error implied by a bootstrap CI (width ~ 2 x 1.96 x SE).
+
+    Using the BLOCK bootstrap CI makes this robust to serial correlation, so
+    power is judged on effective sample size rather than raw row count.
+    """
+    if not np.isfinite(lo) or not np.isfinite(hi) or hi <= lo:
+        return fallback
+    return float((hi - lo) / 3.92)
+
+
 def _permutation_baseline(
     bars: pd.DataFrame,
     n_signals: int,
@@ -218,9 +229,13 @@ def screen_signal(
         if v.size < 2:
             continue
         mean = float(v.mean())
-        se = float(v.std(ddof=1) / np.sqrt(v.size))
-        t = mean / se if se > 0 else float("nan")
+        se_iid = float(v.std(ddof=1) / np.sqrt(v.size))
         lo, hi = _block_bootstrap_ci(v)
+        # Power must use the CLUSTER-AWARE standard error. Signals repeat while
+        # a condition persists, so the iid SE is too small -- it would understate
+        # MDE and mark an underpowered test as powered (a false-pass risk).
+        se = _se_from_ci(lo, hi, fallback=se_iid)
+        t = mean / se if se > 0 else float("nan")
         null = _permutation_baseline(bars, len(signal), signal.direction, h, n_perm=n_perm)
         null = null[~np.isnan(null)]
         p = (float((null >= mean).sum()) + 1) / (null.size + 1) if null.size else float("nan")
@@ -236,6 +251,7 @@ def screen_signal(
             "n": int(v.size),
             "mean_bps": round(mean, 3),
             "se_bps": round(se, 3),
+            "se_iid_bps": round(se_iid, 3),
             "mde_bps": round(float(mde), 3),
             "powered": powered,
             "t_stat": round(float(t), 3),
@@ -298,10 +314,12 @@ def format_report(rep: dict) -> str:
     ]
     for h, d in rep.get("horizons", {}).items():
         ci = f"[{d['ci95_bps'][0]:.2f}, {d['ci95_bps'][1]:.2f}]"
+        pp = d.get("perm_p")
+        pp_s = f"{pp:8.3f}" if isinstance(pp, (int, float)) else f"{'-':>8}"
         lines.append(
             f"{h:>8} {d['mean_bps']:>10.2f} {d['t_stat']:>7.2f} {ci:>20} "
             f"{d.get('mde_bps', float('nan')):>8.1f} {str(d.get('powered')):>8} "
-            f"{d['perm_p']:>8.3f} {str(d['clears_cost']):>7}"
+            f"{pp_s} {str(d['clears_cost']):>7}"
         )
     if "subperiods" in rep:
         b = ", ".join(str(x["mean_bps"]) for x in rep["subperiods"]["buckets"])
@@ -355,9 +373,10 @@ def screen_multi(
         if v.size < 2:
             continue
         mean = float(v.mean())
-        se = float(v.std(ddof=1) / np.sqrt(v.size))
-        t = mean / se if se > 0 else float("nan")
+        se_iid = float(v.std(ddof=1) / np.sqrt(v.size))
         lo, hi = _block_bootstrap_ci(v)
+        se = _se_from_ci(lo, hi, fallback=se_iid)   # cluster-aware, see above
+        t = mean / se if se > 0 else float("nan")
         mde = 2.80 * se
         powered = bool(mde <= cost_bps)
         clears = bool(lo > cost_bps)
