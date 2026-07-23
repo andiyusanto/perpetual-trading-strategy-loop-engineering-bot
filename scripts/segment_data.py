@@ -283,6 +283,23 @@ def _holdout_unlocked() -> tuple[bool, str]:
     ).stdout.strip()
     if diff:
         return False, f"hypothesis/ or src/ changed since tag {latest_tag}"
+
+    # `git diff` does NOT see untracked files, so without this an entire new
+    # strategy module could sit uncommitted in src/ while the gate still
+    # reported "unlocked" — bypassing the freeze completely. Verified: it did.
+    untracked = subprocess.run(
+        [
+            "git", "ls-files", "--others", "--exclude-standard", "--",
+            "hypothesis/", "src/",
+        ],
+        capture_output=True, text=True, cwd=_PROJECT_ROOT,
+    ).stdout.strip()
+    if untracked:
+        n = len(untracked.splitlines())
+        return False, (
+            f"{n} untracked file(s) in hypothesis/ or src/ — commit or remove "
+            f"them; uncommitted code is still code"
+        )
     return True, latest_tag
 
 

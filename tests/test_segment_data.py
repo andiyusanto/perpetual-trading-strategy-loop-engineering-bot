@@ -149,3 +149,20 @@ def test_every_validation_open_is_logged_with_commit(monkeypatch, tmp_path):
     assert len(commit) >= 7  # a real commit hash (or 'no-git')
     assert "BTCUSDT" in note
     dt.datetime.fromisoformat(ts)  # parses
+
+
+def test_untracked_files_in_frozen_paths_lock_the_holdout(tmp_path, monkeypatch):
+    """Regression: git diff ignores untracked files, so without an explicit
+    check a whole new module could sit uncommitted in src/ while the gate
+    still reported unlocked. Verified that this was bypassable."""
+    import subprocess
+    _redirect_log(monkeypatch, tmp_path)
+    root = sd._PROJECT_ROOT
+    sneak = root / "src" / "_untracked_probe.py"
+    sneak.write_text("# uncommitted\n")
+    try:
+        ok, reason = sd._holdout_unlocked()
+        assert not ok, "untracked file in src/ must lock the holdout"
+        assert "untracked" in reason
+    finally:
+        sneak.unlink(missing_ok=True)
