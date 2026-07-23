@@ -83,7 +83,8 @@ backtest reproducibility.
 | aggTrades | `data.binance.vision` archive (USD-M Futures) | Full history | CVD reconstruction — primary |
 | Funding rate | `GET /fapi/v1/fundingRate` | Full history | Funding filter |
 | Klines | `data.binance.vision` archive | Full history | Reference/validation only |
-| Open Interest | `GET /futures/data/openInterestHist` | **Last 30 days only** | NOT usable for this backtest — day trade strategy does not depend on OI, so this is not a blocker |
+| Open Interest + positioning metrics | `data.binance.vision` archive, `data/futures/um/daily/metrics/` | **Full history** (BTCUSDT from 2020-09-01), 5-min granularity, daily files only | **CORRECTED 2026-07-23** — verified from a real file. Carries `sum_open_interest`, `count_toptrader_long_short_ratio`, `sum_toptrader_long_short_ratio`, `count_long_short_ratio`, `sum_taker_long_short_vol_ratio`. The 30-day limit applies to the REST endpoint ONLY, not the archive. |
+| Open Interest (REST) | `GET /futures/data/openInterestHist` | Last 30 days only | Superseded by the archive row above for backtesting |
 | Liquidation feed (`!forceOrder`) | Live WebSocket only | **No historical archive exists** | NOT usable for backtest — scalping strategy (future phase) will need a third-party historical source or forward-only shadow validation |
 
 aggTrades schema (USD-M Futures): `agg_trade_id, price, quantity, first_trade_id,
