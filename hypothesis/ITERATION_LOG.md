@@ -284,3 +284,47 @@ Related fix: `r_multiple` divided by per-unit risk while `net_pnl` scales with
 quantity, so R would have scaled with position size. Identical at qty=1.0 (every
 result to date) and silently wrong above it. `position_qty` is now an explicit
 parameter rather than a hardcoded literal.
+
+---
+
+## Perp-quarterly basis carry — MEASURED, NOT VIABLE — 2026-07-23
+
+First non-predictive candidate tested: a delivery future MUST converge to the
+index at expiry, so this is an accounting identity, not a forecast.
+
+    short quarterly @ F + long perp @ P, held to delivery
+    P&L = (F-S) + (S-P) - sum(funding) - fees = basis - funding carry - fees
+
+The price path cancels; it is delta-neutral and contractual. 21 BTCUSDT
+quarterly contracts, 2021-2026, entry 60 days before expiry.
+
+| | median |
+|---|--:|
+| entry basis | +110.8 bps |
+| funding paid by long perp leg | +84.3 bps |
+| **gross carry (basis - funding)** | **+26.7 bps** = **+1.62%/yr** |
+| net after 25 bps costs | +1.7 bps = **+0.10%/yr** |
+| profitable contracts | 11/21 |
+| spread of outcomes | -300.9 .. +153.9 bps (std 96 bps) |
+
+**Verdict: not viable, and NOT because of fees.** Even at ZERO cost the gross
+carry is only ~1.6% annualised against a ~4-5% risk-free rate, with liquidation
+risk on the short leg and capital locked for 60 days. Outcomes are near a coin
+flip (13/21 gross-positive) with a standard deviation 3.6x the median.
+
+**Why**: the basis prices the funding. Pearson(basis, funding) = +0.564
+(p=0.008), Spearman +0.562 — the quarterly premium moves with the funding it
+offsets, which is the arbitrage relationship holding. There is no free carry
+sitting in the term structure; it is already priced.
+
+Cost sensitivity, for the record: 25 bps -> +0.10%/yr, 10 bps -> +1.02%/yr,
+0 bps -> +1.62%/yr. Unlike the directional screens, cheaper execution does NOT
+rescue this one.
+
+**Data bug caught before reporting.** The first run scored funding as 0.0 for
+every contract from 2025-03 on, because the screening funding pull covers
+2020-2024 while 2025-2026 lives in data/raw/. Summing an empty slice yields
+zero, i.e. a free trade -- and it flattered exactly the six most recent,
+best-looking contracts (headline was "12/21 profitable, +0.77%/yr"). The script
+now merges both sources AND refuses to score any contract whose holding window
+is not fully covered by funding data, rather than silently scoring it as free.
