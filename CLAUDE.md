@@ -7,11 +7,24 @@ built on a **nested control-loop architecture** (not a single flat loop, and
 not an LLM-driven decision loop). This is a **separate project** from any
 prior CVD Divergence bot design — no legacy code exists to migrate.
 
-**Current phase: Day Trade research only.** We are NOT writing live execution
-code yet. We are building the data pipeline and backtest harness for the
-day trade strategy. Do not skip ahead to execution/risk/live-bot code until
-the day trade hypothesis has passed the gates in `hypothesis/KILL_CRITERIA.md`
-against a holdout set.
+**Phase history:**
+- *Day-trade research (CONCLUDED)*: the CVD-divergence + funding day-trade
+  hypothesis (v1/v1.1) was **disproven** on the research set — zero forward
+  information at every horizon. Funding-extreme, positioning-divergence, and
+  perp-quarterly-basis candidates were also screened out. See
+  `hypothesis/ITERATION_LOG.md`. Validation/holdout were never opened.
+- *Current phase: TREND-FOLLOWING live build.* Pivoted to a documented,
+  cross-asset-validated trend premium (`hypothesis/HYPOTHESIS_trend_following.md`,
+  tf-v1). Because our own data cannot statistically gate a multi-week strategy
+  (the "power wall" — see ITERATION_LOG), the backtest here is an implementation
+  check, NOT a profitability gate; real validation is forward (shadow → live
+  $100). We ARE now writing execution/risk code — deliberately **risk loop and
+  kill switch FIRST**, before signal code, because at $100 that is what decides
+  whether a bug costs $5 or the account.
+
+The methodology rules below still apply in full (no look-ahead, real costs, no
+self-scoring, pre-registration before locking). Only the "no live code yet" gate
+is lifted, and only because the research phase it gated has concluded.
 
 ---
 
